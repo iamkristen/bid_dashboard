@@ -1,4 +1,5 @@
 import 'package:dashboard/helper/app_colors.dart';
+import 'package:dashboard/helper/app_fonts.dart';
 import 'package:flutter/material.dart';
 import '../routes.dart';
 
@@ -18,13 +19,21 @@ class SideMenu extends StatelessWidget {
             ),
           ),
           ListTile(
-            title: Text("Dashboard"),
+            title: Text(
+              "Dashboard",
+              style: AppFonts.poppinsRegularStyle
+                  .copyWith(color: AppColors.primary),
+            ),
             onTap: () {
               Navigator.pushNamed(context, AppRoutes.dashboard);
             },
           ),
           ListTile(
-            title: Text("View All Requests"),
+            title: Text(
+              "View All Requests",
+              style: AppFonts.poppinsRegularStyle
+                  .copyWith(color: AppColors.primary),
+            ),
             onTap: () {
               Navigator.pushNamed(context, AppRoutes.viewAllRequestPage);
             },

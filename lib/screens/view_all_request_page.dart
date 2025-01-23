@@ -1,4 +1,7 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dashboard/components/custom_appbar.dart';
+import 'package:dashboard/helper/app_colors.dart';
+import 'package:dashboard/helper/app_fonts.dart';
 import 'package:dashboard/provider/identity_request_provider.dart';
 import 'package:dashboard/routes.dart';
 import 'package:flutter/material.dart';
@@ -20,7 +23,11 @@ class ViewAllRequestPage extends StatelessWidget {
             : requestProvider.error != null
                 ? Center(child: Text(requestProvider.error!))
                 : requestProvider.requests.isEmpty
-                    ? const Center(child: Text("No requests found"))
+                    ? const Center(
+                        child: Text(
+                        "No requests found",
+                        style: AppFonts.poppinsRegularStyle,
+                      ))
                     : ListView.builder(
                         itemCount: requestProvider.requests.length,
                         itemBuilder: (context, index) {
@@ -34,20 +41,40 @@ class ViewAllRequestPage extends StatelessWidget {
                             ),
                             child: ListTile(
                               tileColor: request.status == "pending"
-                                  ? Colors.yellow[100]
+                                  ? Colors.yellow
                                   : request.status == "approved"
-                                      ? Colors.green[100]
-                                      : Colors.red[100],
+                                      ? Colors.green
+                                      : Colors.red,
                               leading: CircleAvatar(
-                                backgroundImage:
-                                    NetworkImage(request.profileImage),
+                                radius: 50,
+                                backgroundColor: AppColors.primary,
+                                child: CachedNetworkImage(
+                                  imageUrl: request.profileImage,
+                                  imageBuilder: (context, imageProvider) =>
+                                      CircleAvatar(
+                                    radius: 50,
+                                    backgroundImage: imageProvider,
+                                  ),
+                                  placeholder: (context, url) =>
+                                      CircularProgressIndicator(),
+                                  errorWidget: (context, url, error) => Icon(
+                                    Icons.account_circle,
+                                    size: 50,
+                                    color: Colors.white,
+                                  ),
+                                ),
                               ),
-                              title: Text(request.fullName),
+                              title: Text(request.fullName,
+                                  style: AppFonts.poppinsRegularStyle
+                                      .copyWith(color: AppColors.primary)),
                               subtitle: Text(
-                                  "Action: ${request.action} | Status: ${request.status}"),
+                                "Action: ${request.action} | Status: ${request.status}",
+                                style: AppFonts.poppinsRegularStyle.copyWith(
+                                    fontSize: 12, color: AppColors.primary),
+                              ),
                               onTap: () => Navigator.pushNamed(
                                 context,
-                                AppRoutes.viewAllRequestPage,
+                                AppRoutes.userRequest,
                                 arguments: request,
                               ),
                             ),

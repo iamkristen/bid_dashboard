@@ -1,3 +1,4 @@
+import 'package:dashboard/models/identity_request_model.dart';
 import 'package:dashboard/screens/dashboard.dart';
 import 'package:dashboard/screens/user_request_parge.dart';
 import 'package:dashboard/screens/view_all_request_page.dart';
@@ -15,7 +16,7 @@ class AppRoutes {
       case viewAllRequestPage:
         return MaterialPageRoute(builder: (_) => ViewAllRequestPage());
       case userRequest:
-        final userData = settings.arguments as Map<String, dynamic>;
+        final userData = settings.arguments as IdentityRequest;
         return MaterialPageRoute(
             builder: (_) => UserRequestPage(
                   userData: userData,

@@ -28,7 +28,7 @@ class MyApp extends StatelessWidget {
             centerTitle: true,
             iconTheme: const IconThemeData(color: Colors.white),
           )),
-      initialRoute: AppRoutes.dashboard,
+      initialRoute: AppRoutes.viewAllRequestPage,
       onGenerateRoute: AppRoutes.generateRoute,
     );
   }
