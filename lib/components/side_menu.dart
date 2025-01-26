@@ -21,7 +21,7 @@ class SideMenu extends StatelessWidget {
           ListTile(
             title: Text(
               "Dashboard",
-              style: AppFonts.poppinsRegularStyle
+              style: AppTextStyles.poppinsRegularStyle
                   .copyWith(color: AppColors.primary),
             ),
             onTap: () {
@@ -30,12 +30,22 @@ class SideMenu extends StatelessWidget {
           ),
           ListTile(
             title: Text(
-              "View All Requests",
-              style: AppFonts.poppinsRegularStyle
+              "View Identity Requests",
+              style: AppTextStyles.poppinsRegularStyle
                   .copyWith(color: AppColors.primary),
             ),
             onTap: () {
-              Navigator.pushNamed(context, AppRoutes.viewAllRequestPage);
+              Navigator.pushNamed(context, AppRoutes.viewIdentityRequestPage);
+            },
+          ),
+          ListTile(
+            title: Text(
+              "View Access Requests ",
+              style: AppTextStyles.poppinsRegularStyle
+                  .copyWith(color: AppColors.primary),
+            ),
+            onTap: () {
+              Navigator.pushNamed(context, AppRoutes.viewAccessRequestPage);
             },
           ),
         ],

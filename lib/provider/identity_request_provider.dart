@@ -5,11 +5,11 @@ import 'package:dashboard/services/identity_request_service.dart';
 class IdentityRequestProvider with ChangeNotifier {
   final IdentityRequestService _service = IdentityRequestService();
 
-  List<IdentityRequest> _requests = [];
+  List<IdentityRequestModel> _requests = [];
   bool _isLoading = false;
   String? _error;
 
-  List<IdentityRequest> get requests => _requests;
+  List<IdentityRequestModel> get requests => _requests;
   bool get isLoading => _isLoading;
   String? get error => _error;
 

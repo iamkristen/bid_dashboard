@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class AppFonts {
+class AppTextStyles {
   static const String poppins = "Poppins";
   static const String iceberg = "Iceberg";
 

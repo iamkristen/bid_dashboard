@@ -1,5 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dashboard/components/custom_appbar.dart';
+import 'package:dashboard/components/custom_message.dart';
+import 'package:dashboard/components/custom_textfields.dart';
 import 'package:dashboard/helper/app_colors.dart';
 import 'package:dashboard/helper/app_fonts.dart';
 import 'package:dashboard/models/identity_request_model.dart';
@@ -9,9 +11,9 @@ import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 
 class UserRequestPage extends StatelessWidget {
-  final IdentityRequest userData;
-
-  const UserRequestPage({super.key, required this.userData});
+  final IdentityRequestModel userData;
+  final TextEditingController _reasonController = TextEditingController();
+  UserRequestPage({super.key, required this.userData});
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +63,7 @@ class UserRequestPage extends StatelessWidget {
                       ),
                       const SizedBox(height: 20),
                       Text(userData.fullName,
-                          style: AppFonts.poppinsBoldStyle.copyWith(
+                          style: AppTextStyles.poppinsBoldStyle.copyWith(
                               fontSize: 24, color: AppColors.primary)),
                       const SizedBox(height: 10),
                       const Divider(
@@ -86,6 +88,19 @@ class UserRequestPage extends StatelessWidget {
                           userData.biometricHash),
                       const SizedBox(height: 10),
                       _buildDetailRow(Icons.info, "Reason", userData.reason),
+                      if (userData.status == "rejected" &&
+                          userData.responseReason!.isNotEmpty)
+                        Column(
+                          children: [
+                            const SizedBox(height: 10),
+                            const Divider(
+                              color: AppColors.secondary,
+                            ),
+                            const SizedBox(height: 10),
+                            _buildDetailRow(Icons.info, "Response Reason",
+                                userData.responseReason!),
+                          ],
+                        ),
                       const SizedBox(height: 20),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -93,18 +108,17 @@ class UserRequestPage extends StatelessWidget {
                           ElevatedButton.icon(
                             onPressed: () async {
                               await requestProvider.updateRequest(
-                                  userData.id, {"status": "approved"});
+                                  userData.id!, {"status": "approved"});
                               if (!context.mounted) return;
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                    content: Text("Request Approved")),
-                              );
+                              CustomMessage.show(context,
+                                  message: "Request Approved",
+                                  backgroundColor: Colors.green);
                               Navigator.pop(context);
                             },
                             icon: const Icon(Icons.check, color: Colors.white),
                             label: const Text(
                               "Approve",
-                              style: AppFonts.poppinsRegularStyle,
+                              style: AppTextStyles.poppinsRegularStyle,
                             ),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.green,
@@ -112,14 +126,94 @@ class UserRequestPage extends StatelessWidget {
                           ),
                           ElevatedButton.icon(
                             onPressed: () async {
-                              await requestProvider.updateRequest(
-                                  userData.id, {"status": "rejected"});
-                              if (!context.mounted) return;
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                    content: Text("Request Rejected")),
+                              final TextEditingController reasonController =
+                                  TextEditingController();
+
+                              await showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return AlertDialog(
+                                    title: const Text(
+                                      "Reason for Rejection",
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    content: SizedBox(
+                                      width: MediaQuery.of(context).size.width *
+                                          0.5,
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          CustomTextField(
+                                            hintText:
+                                                "Provide a reason for rejection",
+                                            icon: Icons.highlight_off_outlined,
+                                            label: "Reason",
+                                            controller: reasonController,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () {
+                                          if (reasonController.text
+                                              .trim()
+                                              .isEmpty) {
+                                            CustomMessage.show(
+                                              context,
+                                              message:
+                                                  "Please provide a reason for rejection.",
+                                              backgroundColor: Colors.orange,
+                                            );
+                                            return;
+                                          }
+
+                                          Navigator.pop(context);
+                                        },
+                                        child: const Text(
+                                          "Send",
+                                          style: TextStyle(color: Colors.red),
+                                        ),
+                                      ),
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                        },
+                                        child: const Text(
+                                          "Cancel",
+                                          style: TextStyle(color: Colors.grey),
+                                        ),
+                                      ),
+                                    ],
+                                  );
+                                },
                               );
-                              Navigator.pop(context);
+
+                              // Check if a reason was provided
+                              if (reasonController.text.trim().isNotEmpty) {
+                                await requestProvider
+                                    .updateRequest(userData.id!, {
+                                  "status": "rejected",
+                                  "responseReason": reasonController.text,
+                                });
+
+                                if (!context.mounted) return;
+
+                                CustomMessage.show(
+                                  context,
+                                  message: "Request Rejected",
+                                  backgroundColor: Colors.red,
+                                );
+
+                                Navigator.pop(context);
+                              } else {
+                                CustomMessage.show(
+                                  context,
+                                  message: "Rejection reason is required.",
+                                  backgroundColor: Colors.orange,
+                                );
+                              }
                             },
                             icon: const Icon(
                               Icons.close,
@@ -127,7 +221,7 @@ class UserRequestPage extends StatelessWidget {
                             ),
                             label: const Text(
                               "Reject",
-                              style: AppFonts.poppinsRegularStyle,
+                              style: AppTextStyles.poppinsRegularStyle,
                             ),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.red,
@@ -162,7 +256,7 @@ class UserRequestPage extends StatelessWidget {
             children: [
               Text(
                 label,
-                style: AppFonts.poppinsRegularStyle.copyWith(
+                style: AppTextStyles.poppinsRegularStyle.copyWith(
                   fontSize: 16,
                   color: AppColors.secondary,
                 ),
@@ -170,7 +264,7 @@ class UserRequestPage extends StatelessWidget {
               const SizedBox(height: 4),
               Text(
                 value,
-                style: AppFonts.poppinsRegularStyle.copyWith(
+                style: AppTextStyles.poppinsRegularStyle.copyWith(
                   fontSize: 16,
                   color: AppColors.primary,
                 ),

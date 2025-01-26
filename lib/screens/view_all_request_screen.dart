@@ -7,8 +7,8 @@ import 'package:dashboard/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class ViewAllRequestPage extends StatelessWidget {
-  const ViewAllRequestPage({super.key});
+class ViewIdentityRequestPage extends StatelessWidget {
+  const ViewIdentityRequestPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +26,7 @@ class ViewAllRequestPage extends StatelessWidget {
                     ? const Center(
                         child: Text(
                         "No requests found",
-                        style: AppFonts.poppinsRegularStyle,
+                        style: AppTextStyles.poppinsRegularStyle,
                       ))
                     : ListView.builder(
                         itemCount: requestProvider.requests.length,
@@ -65,16 +65,17 @@ class ViewAllRequestPage extends StatelessWidget {
                                 ),
                               ),
                               title: Text(request.fullName,
-                                  style: AppFonts.poppinsRegularStyle
+                                  style: AppTextStyles.poppinsRegularStyle
                                       .copyWith(color: AppColors.primary)),
                               subtitle: Text(
                                 "Action: ${request.action} | Status: ${request.status}",
-                                style: AppFonts.poppinsRegularStyle.copyWith(
-                                    fontSize: 12, color: AppColors.primary),
+                                style: AppTextStyles.poppinsRegularStyle
+                                    .copyWith(
+                                        fontSize: 12, color: AppColors.primary),
                               ),
                               onTap: () => Navigator.pushNamed(
                                 context,
-                                AppRoutes.userRequest,
+                                AppRoutes.userRequestPage,
                                 arguments: request,
                               ),
                             ),

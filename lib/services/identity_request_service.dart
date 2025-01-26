@@ -5,19 +5,13 @@ import 'package:dio/dio.dart';
 class IdentityRequestService {
   final Dio _dio = DioClient().dio;
 
-  Future<List<IdentityRequest>> fetchAllRequests() async {
+  Future<List<IdentityRequestModel>> fetchAllRequests() async {
     try {
       final response = await _dio.get("/identityRequest/getAll");
-      if (response.data is Map<String, dynamic>) {
-        final dataList = response.data['data'] as List;
-        return dataList.map((json) => IdentityRequest.fromJson(json)).toList();
-      } else if (response.data is List) {
-        return (response.data as List)
-            .map((json) => IdentityRequest.fromJson(json))
-            .toList();
-      } else {
-        throw Exception("Unexpected response format: ${response.data}");
-      }
+      final IdentityResponseModel identityResponseModel =
+          IdentityResponseModel.fromJson(response.data);
+
+      return identityResponseModel.data;
     } on DioException catch (e) {
       String errorMessage = _handleDioError(e);
       throw Exception(errorMessage);
@@ -26,7 +20,7 @@ class IdentityRequestService {
     }
   }
 
-  Future<IdentityRequest> updateRequest(
+  Future<IdentityRequestModel> updateRequest(
       String requestId, Map<String, dynamic> updatedData) async {
     try {
       final response = await _dio.put(
@@ -35,12 +29,11 @@ class IdentityRequestService {
       if (response.data["status"] == "error") {
         throw Exception(response.data["message"]);
       }
-      return IdentityRequest.fromJson(response.data['data']);
+      return IdentityRequestModel.fromJson(response.data['data']);
     } on DioException catch (e) {
       String errorMessage = _handleDioError(e);
       throw Exception(errorMessage);
     } catch (e) {
-      print(e);
       throw Exception("Something went wrong. Please try again later.");
     }
   }
