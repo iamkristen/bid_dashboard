@@ -51,16 +51,18 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: "${AppRoutes.userIdentityRequestPage}:userId",
       builder: (context, state) {
-        final userData = state.extra as UserData;
-        return UserRequestPage(userData: userData);
+        final userId = state.pathParameters['userId'];
+        return UserIdentityRequestPage(
+          requestId: userId ?? "",
+        );
       },
     ),
     GoRoute(
       path: "${AppRoutes.userAccessRequestPage}:accessId",
       builder: (context, state) {
-        // final accessId = state.pathParameters['accessId'];
-        final accessData = state.extra as AccessRequestModel;
-        return UserAccessRequestPage(userData: accessData);
+        final accessId = state.pathParameters['accessId'];
+        // final accessData = state.extra as AccessRequestModel;
+        return UserAccessRequestPage(userId: accessId ?? "");
       },
     ),
   ],

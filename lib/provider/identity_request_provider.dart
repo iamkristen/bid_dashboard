@@ -5,13 +5,15 @@ import 'package:dashboard/services/identity_request_service.dart';
 class IdentityRequestProvider with ChangeNotifier {
   final IdentityRequestService _service = IdentityRequestService();
 
-  List<UserData> _requests = [];
+  List<UserData> _allRequests = [];
+  UserData? _request;
   int _count = 0;
 
   bool _isLoading = false;
   String? _error;
 
-  List<UserData> get requests => _requests;
+  List<UserData> get allRequests => _allRequests;
+  UserData? get request => _request;
   bool get isLoading => _isLoading;
   String? get error => _error;
   int get count => _count;
@@ -22,9 +24,25 @@ class IdentityRequestProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      _requests = await _service.fetchAllRequests();
+      _allRequests = await _service.fetchAllRequests();
     } catch (e) {
       _error = e.toString();
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> fetchRequestById(String requestId) async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      _request = await _service.fetchRequestById(requestId);
+    } catch (e) {
+      _error = e.toString();
+      print(_error);
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -55,10 +73,10 @@ class IdentityRequestProvider with ChangeNotifier {
     try {
       final updatedRequest =
           await _service.updateRequest(requestId, updatedData);
-      final index = _requests.indexWhere((req) => req.id == requestId);
+      final index = _allRequests.indexWhere((req) => req.id == requestId);
 
       if (index != -1) {
-        _requests[index] = updatedRequest;
+        _allRequests[index] = updatedRequest;
         notifyListeners();
       }
     } catch (e) {

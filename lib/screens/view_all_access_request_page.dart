@@ -23,11 +23,11 @@ class ViewAccessRequestPage extends StatelessWidget {
         padding: const EdgeInsets.all(16.0),
         child: requestProvider.isLoading
             ? const Center(child: CircularProgressIndicator())
-            : requestProvider.requests.isNotEmpty
+            : requestProvider.allRequests.isNotEmpty
                 ? ListView.builder(
-                    itemCount: requestProvider.requests.length,
+                    itemCount: requestProvider.allRequests.length,
                     itemBuilder: (context, index) {
-                      final request = requestProvider.requests[index];
+                      final request = requestProvider.allRequests[index];
                       return Container(
                         margin: const EdgeInsets.symmetric(
                             vertical: 2, horizontal: 5),
@@ -67,7 +67,6 @@ class ViewAccessRequestPage extends StatelessWidget {
                           ),
                           onTap: () => context.go(
                             "${AppRoutes.userAccessRequestPage}${request.id}",
-                            extra: request,
                           ),
                         ),
                       );

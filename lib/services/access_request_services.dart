@@ -24,6 +24,22 @@ class AccessRequestService {
     }
   }
 
+  Future<AccessRequestModel> fetchRequestById(String requestId) async {
+    try {
+      final response = await _dio.get("/profile/getProfileByID/$requestId");
+      final data = ResponseHelper.fromJson(response.data);
+      if (!data.success) {
+        throw Exception(data.message);
+      }
+      return AccessRequestModel.fromJson(data.data);
+    } on DioException catch (e) {
+      String errorMessage = _handleDioError(e);
+      throw Exception(errorMessage);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   /// create access request
   Future<AccessRequestModel> createRequest(
       Map<String, dynamic> requestData) async {

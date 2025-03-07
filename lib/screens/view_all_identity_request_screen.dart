@@ -25,14 +25,14 @@ class ViewIdentityRequestPage extends StatelessWidget {
             ? const Center(child: CircularProgressIndicator())
             : requestProvider.error != null
                 ? Center(child: Text(requestProvider.error!))
-                : requestProvider.requests.isEmpty
+                : requestProvider.allRequests.isEmpty
                     ? NotFoundWidget(
                         text: "No Identity Request Found",
                       )
                     : ListView.builder(
-                        itemCount: requestProvider.requests.length,
+                        itemCount: requestProvider.allRequests.length,
                         itemBuilder: (context, index) {
-                          final request = requestProvider.requests[index];
+                          final request = requestProvider.allRequests[index];
                           return Container(
                             margin: const EdgeInsets.symmetric(
                                 vertical: 2, horizontal: 5),
@@ -78,7 +78,6 @@ class ViewIdentityRequestPage extends StatelessWidget {
                               ),
                               onTap: () => context.go(
                                 "${AppRoutes.userIdentityRequestPage}${request.id}",
-                                extra: request,
                               ),
                             ),
                           );

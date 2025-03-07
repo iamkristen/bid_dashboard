@@ -22,9 +22,26 @@ class IdentityRequestService {
     }
   }
 
+  Future<UserData> fetchRequestById(String requestId) async {
+    try {
+      final data = await _dio.get("/identityRequest/getById/$requestId");
+      final res = ResponseHelper.fromJson(data.data);
+      if (!res.success) {
+        throw Exception(res.message);
+      }
+      return UserData.fromJson(res.data);
+    } on DioException catch (e) {
+      String errorMessage = _handleDioError(e);
+      throw Exception(errorMessage);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   Future<int> getRequestCount() async {
     try {
       final data = await _dio.get("/identityRequest/getUserIdentityCount");
+
       final res = ResponseHelper.fromJson(data.data);
       if (!res.success) {
         throw Exception(res.message);
