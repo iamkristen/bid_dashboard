@@ -1,21 +1,22 @@
+import 'package:dashboard/models/identity_request_model.dart';
+import 'package:dashboard/models/registered_user_model.dart';
 import 'package:dashboard/models/response_helper.dart';
 import 'package:dashboard/services/dio_clients.dart';
 import 'package:dio/dio.dart';
 
-class EmailSenderServices {
+class RegisteredUserService {
   final Dio _dio = DioClient().dio;
 
-  Future<bool> rejectionEmail(String to, String name) async {
+  Future<List<RegisteredUserData>> fetchAllRequests() async {
     try {
-      final data = await _dio.post("/mail/rejection", data: {
-        "email": to,
-        "name": name,
-      });
-      final response = ResponseHelper.fromJson(data.data);
-      if (!response.success) {
-        throw Exception(response.message);
+      final data = await _dio.get("/web3/users/allUsers");
+      final res = ResponseHelper.fromJson(data.data);
+      if (!res.success) {
+        throw Exception(res.message);
       }
-      return response.success;
+      return res.data
+          .map<RegisteredUserData>((e) => RegisteredUserData.fromMap(e))
+          .toList();
     } on DioException catch (e) {
       String errorMessage = _handleDioError(e);
       throw Exception(errorMessage);

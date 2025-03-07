@@ -1,17 +1,19 @@
 import 'package:dashboard/models/identity_request_model.dart';
+import 'package:dashboard/models/response_helper.dart';
 import 'package:dashboard/services/dio_clients.dart';
 import 'package:dio/dio.dart';
 
 class IdentityRequestService {
   final Dio _dio = DioClient().dio;
 
-  Future<List<IdentityRequestModel>> fetchAllRequests() async {
+  Future<List<UserData>> fetchAllRequests() async {
     try {
-      final response = await _dio.get("/identityRequest/getAll");
-      final IdentityResponseModel identityResponseModel =
-          IdentityResponseModel.fromJson(response.data);
-
-      return identityResponseModel.data;
+      final data = await _dio.get("/identityRequest/getAll");
+      final res = ResponseHelper.fromJson(data.data);
+      if (!res.success) {
+        throw Exception(res.message);
+      }
+      return res.data.map<UserData>((e) => UserData.fromJson(e)).toList();
     } on DioException catch (e) {
       String errorMessage = _handleDioError(e);
       throw Exception(errorMessage);
@@ -20,21 +22,38 @@ class IdentityRequestService {
     }
   }
 
-  Future<IdentityRequestModel> updateRequest(
-      String requestId, Map<String, dynamic> updatedData) async {
+  Future<int> getRequestCount() async {
     try {
-      final response = await _dio.put(
-          "/identityRequest/update/${requestId.toString()}",
-          data: updatedData);
-      if (response.data["status"] == "error") {
-        throw Exception(response.data["message"]);
+      final data = await _dio.get("/identityRequest/getUserIdentityCount");
+      final res = ResponseHelper.fromJson(data.data);
+      if (!res.success) {
+        throw Exception(res.message);
       }
-      return IdentityRequestModel.fromJson(response.data['data']);
+      return res.data;
     } on DioException catch (e) {
       String errorMessage = _handleDioError(e);
       throw Exception(errorMessage);
     } catch (e) {
-      throw Exception("Something went wrong. Please try again later.");
+      rethrow;
+    }
+  }
+
+  Future<UserData> updateRequest(
+      String requestId, Map<String, dynamic> updatedData) async {
+    try {
+      final data = await _dio.put(
+          "/identityRequest/update/${requestId.toString()}",
+          data: updatedData);
+      final response = ResponseHelper.fromJson(data.data);
+      if (!response.success) {
+        throw Exception(response.message);
+      }
+      return UserData.fromJson(response.data);
+    } on DioException catch (e) {
+      String errorMessage = _handleDioError(e);
+      throw Exception(errorMessage);
+    } catch (e) {
+      rethrow;
     }
   }
 

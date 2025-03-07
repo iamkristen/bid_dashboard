@@ -1,22 +1,21 @@
 import 'package:dashboard/models/access_request_model.dart';
+import 'package:dashboard/models/response_helper.dart';
 import 'package:dashboard/services/dio_clients.dart';
 import 'package:dio/dio.dart';
 
 class AccessRequestService {
   final Dio _dio = DioClient().dio;
 
-  /// Fetch all access requests
   Future<List<AccessRequestModel>> fetchAllRequests() async {
     try {
       final response = await _dio.get("/profile/getAll");
-      final AccessResponseModel accessResponseModel =
-          AccessResponseModel.fromJson(response.data);
-
-      if (accessResponseModel.status == "error") {
-        throw Exception(accessResponseModel.message);
+      final data = ResponseHelper.fromJson(response.data);
+      if (!data.success) {
+        throw Exception(data.message);
       }
-
-      return accessResponseModel.data;
+      return (data.data as List)
+          .map((e) => AccessRequestModel.fromJson(e))
+          .toList();
     } on DioException catch (e) {
       String errorMessage = _handleDioError(e);
       throw Exception(errorMessage);
@@ -33,10 +32,28 @@ class AccessRequestService {
         "/profile/create",
         data: requestData,
       );
-      if (response.data["status"] == "error") {
-        throw Exception(response.data["message"]);
+      final res = ResponseHelper.fromJson(response.data);
+      if (!res.success) {
+        throw Exception(res.message);
       }
-      return AccessRequestModel.fromJson(response.data['data']);
+      return AccessRequestModel.fromJson(res.data);
+    } on DioException catch (e) {
+      String errorMessage = _handleDioError(e);
+      throw Exception(errorMessage);
+    } catch (e) {
+      throw Exception("Something went wrong. Please try again later.");
+    }
+  }
+
+  /// Get the count of access requests
+  Future<int> getRequestCount() async {
+    try {
+      final response = await _dio.get("/profile/getProfileCount");
+      final res = ResponseHelper.fromJson(response.data);
+      if (!res.success) {
+        throw Exception(res.message);
+      }
+      return res.data;
     } on DioException catch (e) {
       String errorMessage = _handleDioError(e);
       throw Exception(errorMessage);
@@ -49,14 +66,33 @@ class AccessRequestService {
   Future<AccessRequestModel> updateRequest(
       String requestId, Map<String, dynamic> updatedData) async {
     try {
+      print(requestId);
       final response = await _dio.put(
-        "/accessRequest/update/$requestId",
+        "/profile/update/$requestId",
         data: updatedData,
       );
-      if (response.data["status"] == "error") {
-        throw Exception(response.data["message"]);
+      final res = ResponseHelper.fromJson(response.data);
+      if (!res.success) {
+        throw Exception(res.message);
       }
-      return AccessRequestModel.fromJson(response.data['data']);
+      return AccessRequestModel.fromJson(res.data);
+    } on DioException catch (e) {
+      String errorMessage = _handleDioError(e);
+      throw Exception(errorMessage);
+    } catch (e) {
+      throw Exception("Something went wrong. Please try again later.");
+    }
+  }
+
+  /// Delete a specific access request
+  Future<bool> deleteRequest(String requestId) async {
+    try {
+      final response = await _dio.delete("/profile/delete/$requestId");
+      final res = ResponseHelper.fromJson(response.data);
+      if (!res.success) {
+        throw Exception(res.message);
+      }
+      return res.success;
     } on DioException catch (e) {
       String errorMessage = _handleDioError(e);
       throw Exception(errorMessage);

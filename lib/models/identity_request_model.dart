@@ -1,30 +1,4 @@
-class IdentityResponseModel {
-  final String status;
-  final List<IdentityRequestModel> data;
-
-  IdentityResponseModel({
-    required this.status,
-    required this.data,
-  });
-
-  factory IdentityResponseModel.fromJson(Map<String, dynamic> json) {
-    return IdentityResponseModel(
-      status: json['status'],
-      data: (json['data'] as List)
-          .map((item) => IdentityRequestModel.fromJson(item))
-          .toList(),
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'status': status,
-      'data': data.map((item) => item.toJson(includeId: true)).toList(),
-    };
-  }
-}
-
-class IdentityRequestModel {
+class UserData {
   final String? id; // Nullable for creation
   final String fullName;
   final String dateOfBirth;
@@ -42,7 +16,7 @@ class IdentityRequestModel {
   final DateTime updatedAt;
   final int version;
 
-  IdentityRequestModel({
+  UserData({
     this.id,
     required this.fullName,
     required this.dateOfBirth,
@@ -61,8 +35,8 @@ class IdentityRequestModel {
     required this.version,
   });
 
-  factory IdentityRequestModel.fromJson(Map<String, dynamic> json) {
-    return IdentityRequestModel(
+  factory UserData.fromJson(Map<String, dynamic> json) {
+    return UserData(
       id: json['_id'],
       fullName: json['fullName'],
       dateOfBirth: json['dateOfBirth'],

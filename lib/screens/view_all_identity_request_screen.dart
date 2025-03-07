@@ -1,10 +1,13 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dashboard/components/custom_appbar.dart';
+import 'package:dashboard/components/not_found_widget.dart';
 import 'package:dashboard/helper/app_colors.dart';
 import 'package:dashboard/helper/app_fonts.dart';
+import 'package:dashboard/helper/status_helper.dart';
 import 'package:dashboard/provider/identity_request_provider.dart';
 import 'package:dashboard/routes.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 class ViewIdentityRequestPage extends StatelessWidget {
@@ -23,11 +26,9 @@ class ViewIdentityRequestPage extends StatelessWidget {
             : requestProvider.error != null
                 ? Center(child: Text(requestProvider.error!))
                 : requestProvider.requests.isEmpty
-                    ? const Center(
-                        child: Text(
-                        "No requests found",
-                        style: AppTextStyles.poppinsRegularStyle,
-                      ))
+                    ? NotFoundWidget(
+                        text: "No Identity Request Found",
+                      )
                     : ListView.builder(
                         itemCount: requestProvider.requests.length,
                         itemBuilder: (context, index) {
@@ -40,9 +41,11 @@ class ViewIdentityRequestPage extends StatelessWidget {
                               borderRadius: BorderRadius.circular(5),
                             ),
                             child: ListTile(
-                              tileColor: request.status == "pending"
+                              tileColor: request.status ==
+                                      StatusHelper.getValue(Status.pending)
                                   ? Colors.yellow
-                                  : request.status == "approved"
+                                  : request.status ==
+                                          StatusHelper.getValue(Status.approved)
                                       ? Colors.green
                                       : Colors.red,
                               leading: CircleAvatar(
@@ -73,10 +76,9 @@ class ViewIdentityRequestPage extends StatelessWidget {
                                     .copyWith(
                                         fontSize: 12, color: AppColors.primary),
                               ),
-                              onTap: () => Navigator.pushNamed(
-                                context,
-                                AppRoutes.userRequestPage,
-                                arguments: request,
+                              onTap: () => context.go(
+                                "${AppRoutes.userIdentityRequestPage}${request.id}",
+                                extra: request,
                               ),
                             ),
                           );

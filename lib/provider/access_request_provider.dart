@@ -6,9 +6,11 @@ class AccessRequestProvider with ChangeNotifier {
   final AccessRequestService _service = AccessRequestService();
 
   List<AccessRequestModel> _requests = [];
+  int _count = 0;
   List<AccessRequestModel> get requests => _requests;
   bool _isLoading = false;
   bool get isLoading => _isLoading;
+  int get count => _count;
 
   void setLoading(bool value) {
     _isLoading = value;
@@ -20,10 +22,6 @@ class AccessRequestProvider with ChangeNotifier {
     try {
       setLoading(true);
       _requests = await _service.fetchAllRequests();
-      if (requests.isEmpty) {
-        setLoading(false);
-        return "No requests found";
-      }
       setLoading(false);
       return "Success";
     } catch (e) {
@@ -32,8 +30,20 @@ class AccessRequestProvider with ChangeNotifier {
     }
   }
 
+  /// Get the count of access requests
+  Future<void> getRequestCount() async {
+    try {
+      setLoading(true);
+      _count = await _service.getRequestCount();
+    } catch (e) {
+      rethrow;
+    } finally {
+      setLoading(false);
+    }
+  }
+
   /// Update a specific access request
-  Future<String> updateRequest(
+  Future<bool> updateRequest(
       String requestId, Map<String, dynamic> updatedData) async {
     try {
       final updatedRequest =
@@ -44,9 +54,9 @@ class AccessRequestProvider with ChangeNotifier {
         _requests[index] = updatedRequest;
         notifyListeners();
       }
-      return "Success";
+      return true;
     } catch (e) {
-      return e.toString();
+      rethrow;
     }
   }
 }

@@ -1,27 +1,5 @@
-class AccessResponseModel {
-  final List<AccessRequestModel> data;
-  final String status;
-  final String? message;
-
-  AccessResponseModel({
-    required this.data,
-    required this.status,
-    this.message,
-  });
-
-  factory AccessResponseModel.fromJson(Map<String, dynamic> json) {
-    return AccessResponseModel(
-      status: json['status'],
-      data: (json['data'] as List)
-          .map((e) => AccessRequestModel.fromJson(e))
-          .toList(),
-      message: json['message'],
-    );
-  }
-}
-
 class AccessRequestModel {
-  final String? id; // Make id nullable for creation
+  final String? id;
   final String logo;
   final String name;
   final String crnNumber;
@@ -30,7 +8,7 @@ class AccessRequestModel {
   final List<String> supportingDocuments;
 
   AccessRequestModel({
-    this.id, // Nullable for create operations
+    this.id,
     required this.logo,
     required this.name,
     required this.crnNumber,

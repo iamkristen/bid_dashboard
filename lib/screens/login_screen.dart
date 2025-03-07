@@ -1,13 +1,14 @@
 import 'package:dashboard/helper/app_colors.dart';
 import 'package:dashboard/helper/loading_dialog.dart';
+import 'package:dashboard/helper/remove_exception_string.dart';
 import 'package:dashboard/routes.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:dashboard/components/custom_buttons.dart';
 import 'package:dashboard/components/custom_message.dart';
 import 'package:dashboard/components/custom_textfields.dart';
-import 'package:dashboard/components/loading_screen.dart'; // Import the custom loading screen
 import 'package:dashboard/helper/app_fonts.dart';
 import 'package:dashboard/provider/auth_provider.dart';
 import 'package:lottie/lottie.dart';
@@ -90,28 +91,18 @@ class LoginPage extends StatelessWidget {
                                           LoadingDialog.show(context,
                                               loadingText: "Logging in...");
                                           try {
-                                            final res = await provider.login();
-
-                                            if (res == "success") {
-                                              if (!context.mounted) return;
-                                              Navigator.pushNamedAndRemoveUntil(
-                                                context,
-                                                AppRoutes.dashboard,
-                                                (route) => false,
-                                              );
-                                            } else {
-                                              LoadingDialog.dismiss(context);
-                                              CustomMessage.show(
-                                                context,
-                                                message: res,
-                                                backgroundColor: Colors.red,
-                                              );
-                                            }
+                                            final token =
+                                                await provider.login();
+                                            print(token);
+                                            if (!context.mounted) return;
+                                            context.go(AppRoutes.dashboardPage);
                                           } catch (e) {
                                             LoadingDialog.dismiss(context);
+
                                             CustomMessage.show(
                                               context,
-                                              message: e.toString(),
+                                              message: removeExceptionPrefix(
+                                                  e.toString()),
                                               backgroundColor: Colors.red,
                                             );
                                           }

@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+import 'package:dashboard/models/response_helper.dart';
 import 'package:dashboard/services/dio_clients.dart';
 import 'package:dio/dio.dart';
 import 'package:http_parser/http_parser.dart';
@@ -10,28 +11,26 @@ class UploadServices {
   Future<Map<String, dynamic>> uploadSingleFile(
       String fileName, Uint8List fileData, String mimeType) async {
     try {
-      // Create a MultipartFile from Uint8List
       final file = MultipartFile.fromBytes(
         fileData,
         filename: fileName,
         contentType: MediaType.parse(mimeType),
       );
 
-      // Create FormData to send with the request
       final formData = FormData.fromMap({
         "file": file,
       });
 
-      // Perform the upload request
       final response = await _dio.post(
         "/upload/single",
         data: formData,
       );
+      final res = ResponseHelper.fromJson(response.data);
 
-      if (response.data["status"] == "error") {
-        throw Exception(response.data["message"]);
+      if (!res.success) {
+        throw Exception(res.message);
       }
-      return response.data["data"];
+      return res.data;
     } on DioException catch (e) {
       String errorMessage = _handleDioError(e);
       throw Exception(errorMessage);
@@ -62,16 +61,15 @@ class UploadServices {
         "/upload/multiple",
         data: formData,
       );
-
-      if (response.data["status"] == "error") {
-        throw Exception(response.data["message"]);
+      final res = ResponseHelper.fromJson(response.data);
+      if (!res.success) {
+        throw Exception(res.message);
       }
-      return response.data["data"];
+      return res.data;
     } on DioException catch (e) {
       String errorMessage = _handleDioError(e);
       throw Exception(errorMessage);
     } catch (e) {
-      print(e);
       throw Exception("Something went wrong. Please try again later.");
     }
   }

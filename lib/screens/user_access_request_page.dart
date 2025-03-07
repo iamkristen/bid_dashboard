@@ -1,13 +1,14 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dashboard/components/custom_appbar.dart';
 import 'package:dashboard/components/custom_message.dart';
-import 'package:dashboard/components/custom_textfields.dart';
 import 'package:dashboard/helper/app_colors.dart';
 import 'package:dashboard/helper/app_fonts.dart';
 import 'package:dashboard/helper/loading_dialog.dart';
+import 'package:dashboard/helper/remove_exception_string.dart';
+import 'package:dashboard/helper/status_helper.dart';
 import 'package:dashboard/models/access_request_model.dart';
+import 'package:dashboard/provider/access_request_provider.dart';
 import 'package:dashboard/provider/auth_provider.dart';
-import 'package:dashboard/provider/identity_request_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
@@ -15,13 +16,14 @@ import 'dart:html' as html;
 
 class UserAccessRequestPage extends StatelessWidget {
   final AccessRequestModel userData;
-  final TextEditingController _reasonController = TextEditingController();
 
-  UserAccessRequestPage({super.key, required this.userData});
+  const UserAccessRequestPage({super.key, required this.userData});
 
   @override
   Widget build(BuildContext context) {
-    AuthProvider requestProvider = context.watch<AuthProvider>();
+    AuthProvider authProvider = context.watch<AuthProvider>();
+    AccessRequestProvider accessRequestProvider =
+        context.watch<AccessRequestProvider>();
     return Scaffold(
       appBar: CustomAppBar(title: "User Request"),
       body: Stack(
@@ -144,20 +146,31 @@ class UserAccessRequestPage extends StatelessWidget {
                               try {
                                 LoadingDialog.show(context,
                                     loadingText: "Approving Request...");
-                                final res = await requestProvider.signup(
+                                final res = await authProvider.signup(
                                   userData.email,
                                 );
 
-                                if (res == "success") {
+                                final updateData = await accessRequestProvider
+                                    .updateRequest(userData.id!, {
+                                  "status":
+                                      StatusHelper.getValue(Status.approved),
+                                });
+
+                                if (res && updateData) {
                                   if (!context.mounted) return;
                                   CustomMessage.show(context,
                                       message: "Request Approved",
                                       backgroundColor: Colors.green);
-                                  Navigator.pop(context);
                                 }
+                                LoadingDialog.dismiss(context);
+                                Navigator.pop(context);
                               } catch (e) {
+                                if (!context.mounted) return;
+                                LoadingDialog.dismiss(context);
+
                                 CustomMessage.show(context,
-                                    message: e.toString(),
+                                    message:
+                                        removeExceptionPrefix(e.toString()),
                                     backgroundColor: Colors.red);
                               }
                             },
@@ -174,16 +187,34 @@ class UserAccessRequestPage extends StatelessWidget {
                             onPressed: () async {
                               LoadingDialog.show(context,
                                   loadingText: "Rejecting Request...");
-                              final res =
-                                  await requestProvider.sendRejectionEmail(
-                                email: userData.email,
-                                name: userData.name,
-                              );
-                              if (res == "success") {
-                                CustomMessage.show(context,
-                                    message: "Request Rejected",
-                                    backgroundColor: Colors.red);
+                              try {
+                                final res =
+                                    await authProvider.sendRejectionEmail(
+                                  email: userData.email,
+                                  name: userData.name,
+                                );
+                                final updateData = await accessRequestProvider
+                                    .updateRequest(userData.id!, {
+                                  "status":
+                                      StatusHelper.getValue(Status.rejected),
+                                });
+
+                                if (res && updateData) {
+                                  if (!context.mounted) return;
+                                  CustomMessage.show(context,
+                                      message: "Request Rejected",
+                                      backgroundColor: Colors.red);
+                                }
+                                LoadingDialog.dismiss(context);
                                 Navigator.pop(context);
+                              } catch (e) {
+                                if (!context.mounted) return;
+                                LoadingDialog.dismiss(context);
+
+                                CustomMessage.show(context,
+                                    message:
+                                        removeExceptionPrefix(e.toString()),
+                                    backgroundColor: Colors.red);
                               }
                             },
                             icon: const Icon(Icons.close, color: Colors.white),
@@ -233,71 +264,71 @@ class UserAccessRequestPage extends StatelessWidget {
     );
   }
 
-  Future<void> _showRejectionDialog(
-      BuildContext context, IdentityRequestProvider requestProvider) async {
-    final TextEditingController reasonController = TextEditingController();
+  // Future<void> _showRejectionDialog(
+  //     BuildContext context, IdentityRequestProvider requestProvider) async {
+  //   final TextEditingController reasonController = TextEditingController();
 
-    await showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text(
-            "Reason for Rejection",
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-          content: CustomTextField(
-            hintText: "Provide a reason for rejection",
-            icon: Icons.highlight_off_outlined,
-            label: "Reason",
-            controller: reasonController,
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                if (reasonController.text.trim().isEmpty) {
-                  CustomMessage.show(
-                    context,
-                    message: "Please provide a reason for rejection.",
-                    backgroundColor: Colors.orange,
-                  );
-                  return;
-                }
-                Navigator.pop(context, reasonController.text);
-              },
-              child: const Text(
-                "Send",
-                style: TextStyle(color: Colors.red),
-              ),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: const Text(
-                "Cancel",
-                style: TextStyle(color: Colors.grey),
-              ),
-            ),
-          ],
-        );
-      },
-    );
+  //   await showDialog(
+  //     context: context,
+  //     builder: (context) {
+  //       return AlertDialog(
+  //         title: const Text(
+  //           "Reason for Rejection",
+  //           style: TextStyle(fontWeight: FontWeight.bold),
+  //         ),
+  //         content: CustomTextField(
+  //           hintText: "Provide a reason for rejection",
+  //           icon: Icons.highlight_off_outlined,
+  //           label: "Reason",
+  //           controller: reasonController,
+  //         ),
+  //         actions: [
+  //           TextButton(
+  //             onPressed: () {
+  //               if (reasonController.text.trim().isEmpty) {
+  //                 CustomMessage.show(
+  //                   context,
+  //                   message: "Please provide a reason for rejection.",
+  //                   backgroundColor: Colors.orange,
+  //                 );
+  //                 return;
+  //               }
+  //               Navigator.pop(context, reasonController.text);
+  //             },
+  //             child: const Text(
+  //               "Send",
+  //               style: TextStyle(color: Colors.red),
+  //             ),
+  //           ),
+  //           TextButton(
+  //             onPressed: () {
+  //               Navigator.pop(context);
+  //             },
+  //             child: const Text(
+  //               "Cancel",
+  //               style: TextStyle(color: Colors.grey),
+  //             ),
+  //           ),
+  //         ],
+  //       );
+  //     },
+  //   );
 
-    if (reasonController.text.trim().isNotEmpty) {
-      await requestProvider.updateRequest(userData.id!, {
-        "status": "rejected",
-        "responseReason": reasonController.text,
-      });
+  //   if (reasonController.text.trim().isNotEmpty) {
+  //     await requestProvider.updateRequest(userData.id!, {
+  //       "status": "rejected",
+  //       "responseReason": reasonController.text,
+  //     });
 
-      if (!context.mounted) return;
+  //     if (!context.mounted) return;
 
-      CustomMessage.show(
-        context,
-        message: "Request Rejected",
-        backgroundColor: Colors.red,
-      );
+  //     CustomMessage.show(
+  //       context,
+  //       message: "Request Rejected",
+  //       backgroundColor: Colors.red,
+  //     );
 
-      Navigator.pop(context);
-    }
-  }
+  //     Navigator.pop(context);
+  //   }
+  // }
 }

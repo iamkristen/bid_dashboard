@@ -1,6 +1,7 @@
 import 'package:dashboard/helper/app_colors.dart';
 import 'package:dashboard/helper/app_fonts.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../routes.dart';
 
 class SideMenu extends StatelessWidget {
@@ -25,7 +26,17 @@ class SideMenu extends StatelessWidget {
                   .copyWith(color: AppColors.primary),
             ),
             onTap: () {
-              Navigator.pushNamed(context, AppRoutes.dashboard);
+              context.go(AppRoutes.dashboardPage);
+            },
+          ),
+          ListTile(
+            title: Text(
+              "View Registered Users",
+              style: AppTextStyles.poppinsRegularStyle
+                  .copyWith(color: AppColors.primary),
+            ),
+            onTap: () {
+              context.go(AppRoutes.viewAllRegisteredUser);
             },
           ),
           ListTile(
@@ -35,7 +46,7 @@ class SideMenu extends StatelessWidget {
                   .copyWith(color: AppColors.primary),
             ),
             onTap: () {
-              Navigator.pushNamed(context, AppRoutes.viewIdentityRequestPage);
+              context.go(AppRoutes.viewIdentityRequestPage);
             },
           ),
           ListTile(
@@ -45,7 +56,7 @@ class SideMenu extends StatelessWidget {
                   .copyWith(color: AppColors.primary),
             ),
             onTap: () {
-              Navigator.pushNamed(context, AppRoutes.viewAccessRequestPage);
+              context.go(AppRoutes.viewAccessRequestPage);
             },
           ),
         ],

@@ -1,11 +1,13 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dashboard/components/custom_appbar.dart';
+import 'package:dashboard/components/not_found_widget.dart';
 import 'package:dashboard/helper/app_colors.dart';
 import 'package:dashboard/helper/app_fonts.dart';
 import 'package:dashboard/provider/access_request_provider.dart';
 import 'package:dashboard/provider/identity_request_provider.dart';
 import 'package:dashboard/routes.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 class ViewAccessRequestPage extends StatelessWidget {
@@ -60,25 +62,18 @@ class ViewAccessRequestPage extends StatelessWidget {
                             "CRN Number: ${request.crnNumber}",
                             style: AppTextStyles.poppinsRegularStyle.copyWith(
                               fontSize: 12,
-                              color: Colors.white.withOpacity(0.5),
+                              color: Colors.white70,
                             ),
                           ),
-                          onTap: () => Navigator.pushNamed(
-                            context,
-                            AppRoutes.userAccessRequestPage,
-                            arguments: request,
+                          onTap: () => context.go(
+                            "${AppRoutes.userAccessRequestPage}${request.id}",
+                            extra: request,
                           ),
                         ),
                       );
                     },
                   )
-                : Center(
-                    child: Text(
-                      "No requests found",
-                      style: AppTextStyles.poppinsRegularStyle
-                          .copyWith(color: AppColors.primary),
-                    ),
-                  ),
+                : NotFoundWidget(text: "No Access Request Found", fontsize: 28),
       ),
     );
   }

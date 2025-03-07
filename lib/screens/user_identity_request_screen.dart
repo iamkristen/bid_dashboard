@@ -4,6 +4,7 @@ import 'package:dashboard/components/custom_message.dart';
 import 'package:dashboard/components/custom_textfields.dart';
 import 'package:dashboard/helper/app_colors.dart';
 import 'package:dashboard/helper/app_fonts.dart';
+import 'package:dashboard/helper/status_helper.dart';
 import 'package:dashboard/models/identity_request_model.dart';
 import 'package:dashboard/provider/identity_request_provider.dart';
 import 'package:flutter/material.dart';
@@ -11,9 +12,9 @@ import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 
 class UserRequestPage extends StatelessWidget {
-  final IdentityRequestModel userData;
-  final TextEditingController _reasonController = TextEditingController();
-  UserRequestPage({super.key, required this.userData});
+  final UserData userData;
+  // final TextEditingController _reasonController = TextEditingController();
+  const UserRequestPage({super.key, required this.userData});
 
   @override
   Widget build(BuildContext context) {
@@ -35,8 +36,8 @@ class UserRequestPage extends StatelessWidget {
                 width: MediaQuery.of(context).size.width * 0.4,
                 child: Padding(
                   padding: const EdgeInsets.all(24.0),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
+                  child: ListView(
+                    // mainAxisSize: MainAxisSize.max,
                     children: [
                       CircleAvatar(
                         radius: 53,
@@ -88,7 +89,8 @@ class UserRequestPage extends StatelessWidget {
                           userData.biometricHash),
                       const SizedBox(height: 10),
                       _buildDetailRow(Icons.info, "Reason", userData.reason),
-                      if (userData.status == "rejected" &&
+                      if (userData.status ==
+                              StatusHelper.getValue(Status.rejected) &&
                           userData.responseReason!.isNotEmpty)
                         Column(
                           children: [
@@ -108,7 +110,9 @@ class UserRequestPage extends StatelessWidget {
                           ElevatedButton.icon(
                             onPressed: () async {
                               await requestProvider.updateRequest(
-                                  userData.id!, {"status": "approved"});
+                                  userData.id!, {
+                                "status": StatusHelper.getValue(Status.approved)
+                              });
                               if (!context.mounted) return;
                               CustomMessage.show(context,
                                   message: "Request Approved",
@@ -194,7 +198,8 @@ class UserRequestPage extends StatelessWidget {
                               if (reasonController.text.trim().isNotEmpty) {
                                 await requestProvider
                                     .updateRequest(userData.id!, {
-                                  "status": "rejected",
+                                  "status":
+                                      StatusHelper.getValue(Status.rejected),
                                   "responseReason": reasonController.text,
                                 });
 
@@ -208,6 +213,7 @@ class UserRequestPage extends StatelessWidget {
 
                                 Navigator.pop(context);
                               } else {
+                                if (!context.mounted) return;
                                 CustomMessage.show(
                                   context,
                                   message: "Rejection reason is required.",

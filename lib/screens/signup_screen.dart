@@ -4,6 +4,7 @@ import 'package:dashboard/components/custom_textfields.dart';
 import 'package:dashboard/helper/app_colors.dart';
 import 'package:dashboard/helper/app_fonts.dart';
 import 'package:dashboard/helper/loading_dialog.dart';
+import 'package:dashboard/helper/remove_exception_string.dart';
 import 'package:dashboard/provider/auth_provider.dart';
 import 'package:dashboard/routes.dart';
 import 'package:flutter/gestures.dart';
@@ -188,29 +189,22 @@ class SignupPage extends StatelessWidget {
                                               loadingText:
                                                   "Submitting request...");
                                           try {
-                                            final res = await provider
-                                                .registerProfile();
-                                            if (res == "success") {
-                                              if (!context.mounted) return;
-                                              Navigator.pop(context);
-                                              CustomMessage.show(
-                                                context,
-                                                message:
-                                                    "Request submitted successfully",
-                                                backgroundColor: Colors.green,
-                                              );
-                                            } else {
-                                              LoadingDialog.dismiss(context);
-                                              CustomMessage.show(
-                                                context,
-                                                message: res,
-                                                backgroundColor: Colors.red,
-                                              );
-                                            }
-                                          } catch (e) {
+                                            await provider.registerProfile();
+
+                                            if (!context.mounted) return;
+                                            Navigator.pop(context);
                                             CustomMessage.show(
                                               context,
-                                              message: e.toString(),
+                                              message:
+                                                  "Request submitted successfully",
+                                              backgroundColor: Colors.green,
+                                            );
+                                          } catch (e) {
+                                            LoadingDialog.dismiss(context);
+                                            CustomMessage.show(
+                                              context,
+                                              message: removeExceptionPrefix(
+                                                  e.toString()),
                                               backgroundColor: Colors.red,
                                             );
                                           }

@@ -114,14 +114,12 @@ class AuthProvider extends ChangeNotifier {
     return true;
   }
 
-  Future<String> registerProfile() async {
+  Future<AccessRequestModel> registerProfile() async {
     try {
       setLoading(true);
-
-      // Validate required inputs
       if (avatarBytes == null || supportingDocuments.isEmpty) {
         setLoading(false);
-        return "Please upload at least one document and a logo.";
+        throw Exception("Please upload atleast one document and logo.");
       }
 
       if (organizationNameController.text.isEmpty ||
@@ -129,7 +127,7 @@ class AuthProvider extends ChangeNotifier {
           emailController.text.isEmpty ||
           reasonController.text.isEmpty) {
         setLoading(false);
-        return "Please fill all the fields.";
+        throw Exception("Please fill all the fields.");
       }
 
       // Upload avatar
@@ -145,7 +143,8 @@ class AuthProvider extends ChangeNotifier {
 
       if (documents == null || documents.isEmpty) {
         setLoading(false);
-        return "Failed to upload supporting documents. Please try again.";
+        throw Exception(
+            "Failed to upload supporting documents. Please try again.");
       }
 
       final List<String> urls =
@@ -165,10 +164,10 @@ class AuthProvider extends ChangeNotifier {
       final AccessRequestModel res = await accessRequestService
           .createRequest(profile.toJson(forUpdate: false));
       clear();
-      return "success";
+      return res;
     } catch (e) {
       setLoading(false);
-      return e.toString();
+      rethrow;
     }
   }
 
@@ -177,43 +176,37 @@ class AuthProvider extends ChangeNotifier {
       setLoading(true);
       if (emailController.text.isEmpty || passwordController.text.isEmpty) {
         setLoading(false);
-        return "Please fill all the fields.";
+        throw Exception("Please fill all the fields.");
       }
-      final res = await authService.login(
+      final data = await authService.login(
           emailController.text.trim(), passwordController.text.trim());
-      if (res["status"] == "error") {
-        setLoading(false);
-        return res["error"];
-      }
+      setLoading(false);
       clear();
-      return res["status"];
+      return data["token"];
     } catch (e) {
       setLoading(false);
-      return e.toString();
+      rethrow;
     }
   }
 
-  Future<String> signup(String email) async {
+  Future<bool> signup(String email) async {
     try {
       setLoading(true);
       if (email.isEmpty) {
         setLoading(false);
-        return "Please fill all the fields.";
+        throw Exception("Please fill all the fields.");
       }
-      final res = await authService.signup({"email": email});
-      if (res["status"] == "error") {
-        setLoading(false);
-        return res["message"];
-      }
+      await authService.signup({"email": email});
+      setLoading(false);
       clear();
-      return "success";
+      return true;
     } catch (e) {
       setLoading(false);
-      return "An unexpected error occurred. Please try again.";
+      rethrow;
     }
   }
 
-  Future<String> sendRejectionEmail({
+  Future<bool> sendRejectionEmail({
     required String email,
     required String name,
   }) async {
@@ -224,7 +217,7 @@ class AuthProvider extends ChangeNotifier {
       return res;
     } catch (e) {
       setLoading(false);
-      return "An unexpected error occurred. Please try again.";
+      rethrow;
     }
   }
 }

@@ -1,3 +1,4 @@
+import 'package:dashboard/models/response_helper.dart';
 import 'package:dashboard/services/dio_clients.dart';
 import 'package:dio/dio.dart';
 
@@ -7,41 +8,43 @@ class AuthService {
   // Login Method
   Future<Map<String, dynamic>> login(String email, String password) async {
     try {
-      final response = await _dio.post(
+      final data = await _dio.post(
         "/auth/login",
         data: {
           "email": email,
           "password": password,
         },
       );
-      if (response.data["status"] == "error") {
-        throw Exception(response.data["error"]);
+      final response = ResponseHelper.fromJson(data.data);
+      if (!response.success) {
+        throw Exception(response.message);
       }
       return response.data;
     } on DioException catch (e) {
       String errorMessage = _handleDioError(e);
       throw Exception(errorMessage);
     } catch (e) {
-      throw Exception("Something went wrong. Please try again later.");
+      rethrow;
     }
   }
 
   // Signup Method
   Future<Map<String, dynamic>> signup(Map<String, dynamic> email) async {
     try {
-      final response = await _dio.post(
+      final data = await _dio.post(
         "/auth/signup",
         data: email,
       );
-      if (response.data["status"] == "error") {
-        throw Exception(response.data["message"]);
+      final response = ResponseHelper.fromJson(data.data);
+      if (!response.success) {
+        throw Exception(response.message);
       }
       return response.data;
     } on DioException catch (e) {
       String errorMessage = _handleDioError(e);
       throw Exception(errorMessage);
     } catch (e) {
-      throw Exception("Something went wrong. Please try again later.");
+      rethrow;
     }
   }
 
