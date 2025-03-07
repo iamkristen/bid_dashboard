@@ -6,16 +6,15 @@ import 'package:dio/dio.dart';
 class AccessRequestService {
   final Dio _dio = DioClient().dio;
 
-  Future<List<AccessRequestModel>> fetchAllRequests() async {
+  Future<ProfileResponse> fetchAllRequests({int page = 1}) async {
     try {
-      final response = await _dio.get("/profile/getAll");
+      final response = await _dio
+          .get("/profile/getAll", queryParameters: {"page": page, "limit": 0});
       final data = ResponseHelper.fromJson(response.data);
       if (!data.success) {
         throw Exception(data.message);
       }
-      return (data.data as List)
-          .map((e) => AccessRequestModel.fromJson(e))
-          .toList();
+      return ProfileResponse.fromJson(data.data);
     } on DioException catch (e) {
       String errorMessage = _handleDioError(e);
       throw Exception(errorMessage);

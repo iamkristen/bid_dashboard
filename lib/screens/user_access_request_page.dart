@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dashboard/components/custom_appbar.dart';
 import 'package:dashboard/components/custom_message.dart';
+import 'package:dashboard/components/not_found_widget.dart';
 import 'package:dashboard/helper/app_colors.dart';
 import 'package:dashboard/helper/app_fonts.dart';
 import 'package:dashboard/helper/loading_dialog.dart';
@@ -50,10 +51,7 @@ class _UserAccessRequestPageState extends State<UserAccessRequestPage> {
                     color: Colors.white,
                   )
                 : accessRequestProvider.request == null
-                    ? Text(
-                        "No data found",
-                        style: AppTextStyles.icebergStyle,
-                      )
+                    ? NotFoundWidget(text: "User Access Not Found")
                     : Card(
                         elevation: 8,
                         margin: const EdgeInsets.all(16),

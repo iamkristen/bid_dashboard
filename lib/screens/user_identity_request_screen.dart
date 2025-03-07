@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dashboard/components/custom_appbar.dart';
 import 'package:dashboard/components/custom_message.dart';
 import 'package:dashboard/components/custom_textfields.dart';
+import 'package:dashboard/components/not_found_widget.dart';
 import 'package:dashboard/helper/app_colors.dart';
 import 'package:dashboard/helper/app_fonts.dart';
 import 'package:dashboard/helper/status_helper.dart';
@@ -46,12 +47,7 @@ class _UserIdentityRequestPageState extends State<UserIdentityRequestPage> {
                     color: Colors.white,
                   )
                 : requestProvider.request == null
-                    ? const Center(
-                        child: Text(
-                          "No data found",
-                          style: AppTextStyles.icebergStyle,
-                        ),
-                      )
+                    ? NotFoundWidget(text: "User Identity Request not found")
                     : Card(
                         elevation: 8,
                         margin: const EdgeInsets.all(16),

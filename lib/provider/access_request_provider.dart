@@ -8,8 +8,12 @@ class AccessRequestProvider with ChangeNotifier {
   List<AccessRequestModel> _allRequests = [];
   AccessRequestModel? _request;
   int _count = 0;
+  int _availablePages = 0;
+  int _currentPage = 1;
   List<AccessRequestModel> get allRequests => _allRequests;
   AccessRequestModel? get request => _request;
+  int get availablePages => _availablePages;
+  int get currentPage => _currentPage;
   bool _isLoading = false;
   bool get isLoading => _isLoading;
   int get count => _count;
@@ -19,14 +23,18 @@ class AccessRequestProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  /// Fetch all access requests
-  Future<String> fetchAllRequests() async {
+  Future<String> fetchAllRequests({int page = 1}) async {
     try {
       setLoading(true);
-      _allRequests = await _service.fetchAllRequests();
+
+      ProfileResponse res = await _service.fetchAllRequests(page: page);
+      _availablePages = res.totalPages;
+      _currentPage = res.currentPage;
+      _allRequests = res.data;
       setLoading(false);
       return "Success";
     } catch (e) {
+      print(e);
       setLoading(false);
       return e.toString();
     }

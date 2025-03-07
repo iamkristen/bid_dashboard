@@ -13,8 +13,7 @@ void main() {
     ChangeNotifierProvider(
         create: (_) => IdentityRequestProvider()..fetchAllRequests()),
     ChangeNotifierProvider(create: (_) => AuthProvider()),
-    ChangeNotifierProvider(
-        create: (_) => AccessRequestProvider()..fetchAllRequests()),
+    ChangeNotifierProvider(create: (_) => AccessRequestProvider()),
     ChangeNotifierProvider(
         create: (_) => RegisteredUserProvider()..fetchAllRequests()),
   ], child: const MyApp()));

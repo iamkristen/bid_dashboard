@@ -6,14 +6,16 @@ import 'package:dio/dio.dart';
 class IdentityRequestService {
   final Dio _dio = DioClient().dio;
 
-  Future<List<UserData>> fetchAllRequests() async {
+  Future<UserIdentityResponse> fetchAllRequests({required int page}) async {
     try {
-      final data = await _dio.get("/identityRequest/getAll");
+      final data = await _dio.get("/identityRequest/getAll", queryParameters: {
+        "page": page,
+      });
       final res = ResponseHelper.fromJson(data.data);
       if (!res.success) {
         throw Exception(res.message);
       }
-      return res.data.map<UserData>((e) => UserData.fromJson(e)).toList();
+      return UserIdentityResponse.fromJson(res.data);
     } on DioException catch (e) {
       String errorMessage = _handleDioError(e);
       throw Exception(errorMessage);

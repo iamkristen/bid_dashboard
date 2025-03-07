@@ -8,6 +8,8 @@ class IdentityRequestProvider with ChangeNotifier {
   List<UserData> _allRequests = [];
   UserData? _request;
   int _count = 0;
+  int _currentPage = 1;
+  int _totalPages = 0;
 
   bool _isLoading = false;
   String? _error;
@@ -17,14 +19,19 @@ class IdentityRequestProvider with ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get error => _error;
   int get count => _count;
+  int get currentPage => _currentPage;
+  int get availablePages => _totalPages;
 
-  Future<void> fetchAllRequests() async {
+  Future<void> fetchAllRequests({int page = 1}) async {
     _isLoading = true;
     _error = null;
     notifyListeners();
 
     try {
-      _allRequests = await _service.fetchAllRequests();
+      UserIdentityResponse res = await _service.fetchAllRequests(page: page);
+      _currentPage = res.currentPage;
+      _totalPages = res.totalPages;
+      _allRequests = res.data;
     } catch (e) {
       _error = e.toString();
     } finally {
@@ -42,7 +49,6 @@ class IdentityRequestProvider with ChangeNotifier {
       _request = await _service.fetchRequestById(requestId);
     } catch (e) {
       _error = e.toString();
-      print(_error);
     } finally {
       _isLoading = false;
       notifyListeners();

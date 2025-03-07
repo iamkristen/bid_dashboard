@@ -1,3 +1,31 @@
+class ProfileResponse {
+  final int totalProfiles;
+  final int totalPages;
+  final int currentPage;
+  final int limit;
+  final List<AccessRequestModel> data;
+
+  ProfileResponse({
+    required this.totalProfiles,
+    required this.totalPages,
+    required this.currentPage,
+    required this.limit,
+    required this.data,
+  });
+
+  factory ProfileResponse.fromJson(Map<String, dynamic> json) {
+    return ProfileResponse(
+      totalProfiles: json["totalProfiles"] ?? 0,
+      totalPages: json["totalPages"] ?? 0,
+      currentPage: json["currentPage"] ?? 1,
+      limit: json["limit"] ?? 10,
+      data: (json["data"] as List)
+          .map((e) => AccessRequestModel.fromJson(e))
+          .toList(),
+    );
+  }
+}
+
 class AccessRequestModel {
   final String? id;
   final String logo;

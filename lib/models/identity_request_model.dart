@@ -1,3 +1,29 @@
+class UserIdentityResponse {
+  final int totalUsers;
+  final int totalPages;
+  final int currentPage;
+  final int limit;
+  final List<UserData> data;
+
+  UserIdentityResponse({
+    required this.totalUsers,
+    required this.totalPages,
+    required this.currentPage,
+    required this.limit,
+    required this.data,
+  });
+
+  factory UserIdentityResponse.fromJson(Map<String, dynamic> json) {
+    return UserIdentityResponse(
+      totalUsers: json["totalUsers"] ?? 0,
+      totalPages: json["totalPages"] ?? 0,
+      currentPage: json["currentPage"] ?? 1,
+      limit: json["limit"] ?? 10,
+      data: (json["data"] as List).map((e) => UserData.fromJson(e)).toList(),
+    );
+  }
+}
+
 class UserData {
   final String? id; // Nullable for creation
   final String fullName;
