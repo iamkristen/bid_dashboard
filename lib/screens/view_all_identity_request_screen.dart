@@ -5,7 +5,6 @@ import 'package:dashboard/components/custom_appbar.dart';
 import 'package:dashboard/components/not_found_widget.dart';
 import 'package:dashboard/helper/app_colors.dart';
 import 'package:dashboard/helper/app_fonts.dart';
-import 'package:dashboard/helper/status_helper.dart';
 import 'package:dashboard/provider/identity_request_provider.dart';
 import 'package:dashboard/routes.dart';
 import 'package:flutter/material.dart';
@@ -20,7 +19,7 @@ class ViewIdentityRequestPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final requestProvider = Provider.of<IdentityRequestProvider>(context);
     final screenWidth = MediaQuery.of(context).size.width;
-    final cardWidth = 250.0; // Width of each card
+    final cardWidth = 250.0;
     final crossAxisCount = (screenWidth / cardWidth).floor();
 
     return Scaffold(
@@ -38,7 +37,6 @@ class ViewIdentityRequestPage extends StatelessWidget {
                           return SingleChildScrollView(
                             child: Column(
                               children: [
-                                // Pagination Controls
                                 Container(
                                   alignment: Alignment.centerRight,
                                   child: Row(
@@ -107,7 +105,6 @@ class ViewIdentityRequestPage extends StatelessWidget {
                                     ],
                                   ),
                                 ),
-
                                 Wrap(
                                   alignment: WrapAlignment.center,
                                   spacing: 15,

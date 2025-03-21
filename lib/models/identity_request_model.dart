@@ -19,13 +19,16 @@ class UserIdentityResponse {
       totalPages: json["totalPages"] ?? 0,
       currentPage: json["currentPage"] ?? 1,
       limit: json["limit"] ?? 10,
-      data: (json["data"] as List).map((e) => UserData.fromJson(e)).toList(),
+      data: (json["data"] as List<dynamic>?)
+              ?.map((e) => UserData.fromJson(e))
+              .toList() ??
+          [],
     );
   }
 }
 
 class UserData {
-  final String? id; // Nullable for creation
+  final String? id;
   final String fullName;
   final String dateOfBirth;
   final String gender;
@@ -37,7 +40,7 @@ class UserData {
   final String action;
   final String status;
   final String reason;
-  final String? responseReason;
+  final String responseReason;
   final DateTime createdAt;
   final DateTime updatedAt;
   final int version;
@@ -55,7 +58,7 @@ class UserData {
     required this.action,
     required this.status,
     required this.reason,
-    this.responseReason = "",
+    required this.responseReason,
     required this.createdAt,
     required this.updatedAt,
     required this.version,
@@ -64,21 +67,21 @@ class UserData {
   factory UserData.fromJson(Map<String, dynamic> json) {
     return UserData(
       id: json['_id'],
-      fullName: json['fullName'],
-      dateOfBirth: json['dateOfBirth'],
-      gender: json['gender'],
-      nationality: json['nationality'],
-      placeOfBirth: json['placeOfBirth'],
-      residentialAddress: json['residentialAddress'],
-      biometricHash: json['biometricHash'],
-      profileImage: json['profileImage'],
-      action: json['action'],
-      status: json['status'],
-      reason: json['reason'],
-      responseReason: json['responseReason'] ?? "",
-      createdAt: DateTime.parse(json['createdAt']),
-      updatedAt: DateTime.parse(json['updatedAt']),
-      version: json['__v'],
+      fullName: json['fullName'] ?? '',
+      dateOfBirth: json['dateOfBirth'] ?? '',
+      gender: json['gender'] ?? '',
+      nationality: json['nationality'] ?? '',
+      placeOfBirth: json['placeOfBirth'] ?? '',
+      residentialAddress: json['residentialAddress'] ?? '',
+      biometricHash: json['biometricHash'] ?? '',
+      profileImage: json['profileImage'] ?? '',
+      action: json['action'] ?? '',
+      status: json['status'] ?? '',
+      reason: json['reason'] ?? '',
+      responseReason: json['responseReason'] ?? '',
+      createdAt: DateTime.tryParse(json['createdAt'] ?? '') ?? DateTime.now(),
+      updatedAt: DateTime.tryParse(json['updatedAt'] ?? '') ?? DateTime.now(),
+      version: json['__v'] ?? 0,
     );
   }
 

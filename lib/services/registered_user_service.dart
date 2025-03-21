@@ -1,4 +1,3 @@
-import 'package:dashboard/models/identity_request_model.dart';
 import 'package:dashboard/models/registered_user_model.dart';
 import 'package:dashboard/models/response_helper.dart';
 import 'package:dashboard/services/dio_clients.dart';
