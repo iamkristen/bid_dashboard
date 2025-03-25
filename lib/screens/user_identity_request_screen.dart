@@ -128,7 +128,7 @@ class _UserIdentityRequestPageState extends State<UserIdentityRequestPage> {
                                         StatusHelper.getValue(
                                             Status.rejected) &&
                                     requestProvider
-                                        .request!.responseReason!.isNotEmpty)
+                                        .request!.responseReason.isNotEmpty)
                                   Column(
                                     children: [
                                       const SizedBox(height: 10),
@@ -140,7 +140,7 @@ class _UserIdentityRequestPageState extends State<UserIdentityRequestPage> {
                                           Icons.info,
                                           "Response Reason",
                                           requestProvider
-                                              .request!.responseReason!),
+                                              .request!.responseReason),
                                     ],
                                   ),
                                 const SizedBox(height: 20),

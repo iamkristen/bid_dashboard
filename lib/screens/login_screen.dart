@@ -1,5 +1,4 @@
 import 'package:dashboard/helper/app_colors.dart';
-import 'package:dashboard/helper/loading_dialog.dart';
 import 'package:dashboard/helper/remove_exception_string.dart';
 import 'package:dashboard/routes.dart';
 import 'package:flutter/gestures.dart';
@@ -12,6 +11,8 @@ import 'package:dashboard/components/custom_textfields.dart';
 import 'package:dashboard/helper/app_fonts.dart';
 import 'package:dashboard/provider/auth_provider.dart';
 import 'package:lottie/lottie.dart';
+import 'package:dashboard/components/app_loader.dart';
+import 'package:shared_preferences/shared_preferences.dart'; // Import the AppLoader
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
@@ -88,17 +89,14 @@ class LoginPage extends StatelessWidget {
                                       child: CustomButton(
                                         text: "Login",
                                         onPressed: () async {
-                                          LoadingDialog.show(context,
-                                              loadingText: "Logging in...");
                                           try {
                                             final token =
                                                 await provider.login();
-                                            print(token);
+
                                             if (!context.mounted) return;
+
                                             context.go(AppRoutes.dashboardPage);
                                           } catch (e) {
-                                            LoadingDialog.dismiss(context);
-
                                             CustomMessage.show(
                                               context,
                                               message: removeExceptionPrefix(
@@ -130,12 +128,8 @@ class LoginPage extends StatelessWidget {
                                               ),
                                               recognizer: TapGestureRecognizer()
                                                 ..onTap = () {
-                                                  Navigator
-                                                      .pushNamedAndRemoveUntil(
-                                                    context,
-                                                    AppRoutes.signupPage,
-                                                    (route) => false,
-                                                  );
+                                                  context
+                                                      .go(AppRoutes.signupPage);
                                                 },
                                             ),
                                           ],
@@ -154,6 +148,8 @@ class LoginPage extends StatelessWidget {
                 },
               ),
             ),
+            // Show AppLoader if loading is true
+            if (Provider.of<AuthProvider>(context).isLoading) const AppLoader(),
           ],
         ),
       ),

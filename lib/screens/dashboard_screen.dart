@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
@@ -27,6 +28,10 @@ class _DashboardPageState extends State<DashboardPage> {
           .getRequestCount();
       Provider.of<AccessRequestProvider>(context, listen: false)
           .getRequestCount();
+      SharedPreferences.getInstance().then((prefs) {
+        print(prefs.getString("token"));
+        print(prefs.getString("email"));
+      });
     });
   }
 

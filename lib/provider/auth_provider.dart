@@ -6,6 +6,7 @@ import 'package:dashboard/models/access_request_model.dart';
 import 'package:dashboard/services/access_request_services.dart';
 import 'package:dashboard/services/auth_services.dart';
 import 'package:dashboard/services/email_sender.dart';
+import 'package:dashboard/services/shared_preferences_service.dart';
 import 'package:dashboard/services/upload_services.dart';
 import 'package:flutter/material.dart';
 
@@ -171,7 +172,7 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  Future<String> login() async {
+  Future<void> login() async {
     try {
       setLoading(true);
       if (emailController.text.isEmpty || passwordController.text.isEmpty) {
@@ -180,9 +181,12 @@ class AuthProvider extends ChangeNotifier {
       }
       final data = await authService.login(
           emailController.text.trim(), passwordController.text.trim());
+      await SharedPreferencesService.getInstance().then((prefs) {
+        prefs.setString("token", data["token"]);
+        prefs.setString("email", emailController.text.trim());
+      });
       setLoading(false);
       clear();
-      return data["token"];
     } catch (e) {
       setLoading(false);
       rethrow;

@@ -59,6 +59,16 @@ class SideMenu extends StatelessWidget {
               context.go(AppRoutes.viewAccessRequestPage);
             },
           ),
+          ListTile(
+            title: Text(
+              "View Events",
+              style: AppTextStyles.poppinsRegularStyle
+                  .copyWith(color: AppColors.primary),
+            ),
+            onTap: () {
+              context.go(AppRoutes.eventsPage);
+            },
+          ),
         ],
       ),
     );
