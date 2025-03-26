@@ -11,6 +11,7 @@ class CustomTextField extends StatelessWidget {
   final String? Function(String?)? validator;
   final Function(String)? onChanged;
   final String label;
+  final int maxLines;
 
   const CustomTextField({
     super.key,
@@ -21,6 +22,7 @@ class CustomTextField extends StatelessWidget {
     this.obscureText = false,
     this.validator,
     this.onChanged,
+    this.maxLines = 1,
     required this.label,
   });
 
@@ -32,6 +34,7 @@ class CustomTextField extends StatelessWidget {
       obscureText: obscureText,
       validator: validator,
       onChanged: onChanged,
+      maxLines: maxLines,
       decoration: InputDecoration(
         labelText: label,
         labelStyle: AppTextStyles.poppinsRegularStyle.copyWith(

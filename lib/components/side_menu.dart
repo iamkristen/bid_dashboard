@@ -61,12 +61,22 @@ class SideMenu extends StatelessWidget {
           ),
           ListTile(
             title: Text(
-              "View Events",
+              "View All Events",
               style: AppTextStyles.poppinsRegularStyle
                   .copyWith(color: AppColors.primary),
             ),
             onTap: () {
               context.go(AppRoutes.eventsPage);
+            },
+          ),
+          ListTile(
+            title: Text(
+              "View All Aids",
+              style: AppTextStyles.poppinsRegularStyle
+                  .copyWith(color: AppColors.primary),
+            ),
+            onTap: () {
+              context.go(AppRoutes.viewAllAids);
             },
           ),
         ],

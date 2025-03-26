@@ -22,7 +22,6 @@ class EventProvider with ChangeNotifier {
 
   String _selectedFilter = 'All';
 
-  // Getters
   List<EventModel> get events => _events;
   EventModel? get selectedEvent => _selectedEvent;
   bool get isLoading => _isLoading;
@@ -59,6 +58,14 @@ class EventProvider with ChangeNotifier {
   void setLoading(bool value) {
     _isLoading = value;
     notifyListeners();
+  }
+
+  void updateEventActiveStatus(String eventId, bool activeStatus) {
+    final index = _events.indexWhere((event) => event.id == eventId);
+    if (index != -1) {
+      _events[index].active = activeStatus;
+      notifyListeners();
+    }
   }
 
   void pickImage() {
@@ -135,7 +142,6 @@ class EventProvider with ChangeNotifier {
         mimeType,
       );
       eventData['banner'] = banner['url'];
-      print(eventData);
       final createdEvent = await _eventService.createEvent(eventData);
       _events.add(createdEvent);
       notifyListeners();
@@ -147,7 +153,6 @@ class EventProvider with ChangeNotifier {
     }
   }
 
-  // Update an existing event
   Future<void> updateEvent(String id, Map<String, dynamic> updatedData) async {
     setLoading(true);
     _error = null;
@@ -166,7 +171,6 @@ class EventProvider with ChangeNotifier {
     }
   }
 
-  // Delete an event
   Future<void> deleteEvent(String id) async {
     setLoading(true);
     _error = null;

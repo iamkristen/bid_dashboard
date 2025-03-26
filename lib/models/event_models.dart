@@ -7,7 +7,7 @@ class EventModel {
   final String startTime;
   final String endTime;
   final String location;
-  final bool? active;
+  bool? active;
 
   EventModel({
     required this.id,

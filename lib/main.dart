@@ -1,6 +1,7 @@
 import 'package:dashboard/helper/app_colors.dart';
 import 'package:dashboard/helper/app_fonts.dart';
 import 'package:dashboard/provider/access_request_provider.dart';
+import 'package:dashboard/provider/aid_distribution_provider.dart';
 import 'package:dashboard/provider/auth_provider.dart';
 import 'package:dashboard/provider/event_provider.dart';
 import 'package:dashboard/provider/identity_request_provider.dart';
@@ -22,6 +23,7 @@ void main() async {
     ChangeNotifierProvider(
         create: (_) => RegisteredUserProvider()..fetchAllRequests()),
     ChangeNotifierProvider(create: (_) => EventProvider()),
+    ChangeNotifierProvider(create: (_) => AidDistributionProvider()),
   ], child: const MyApp()));
 }
 

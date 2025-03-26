@@ -1,4 +1,6 @@
+import 'package:dashboard/models/aid_distribution_model.dart';
 import 'package:dashboard/models/event_models.dart';
+import 'package:dashboard/screens/add_edit_aids.dart';
 import 'package:dashboard/screens/add_edit_event_page.dart';
 import 'package:dashboard/screens/view_all_access_request_page.dart';
 import 'package:dashboard/screens/dashboard_screen.dart';
@@ -6,6 +8,7 @@ import 'package:dashboard/screens/login_screen.dart';
 import 'package:dashboard/screens/signup_screen.dart';
 import 'package:dashboard/screens/user_access_request_page.dart';
 import 'package:dashboard/screens/user_identity_request_screen.dart';
+import 'package:dashboard/screens/view_all_aids.dart';
 import 'package:dashboard/screens/view_all_events.dart';
 import 'package:dashboard/screens/view_all_identity_request_screen.dart';
 import 'package:dashboard/screens/view_all_registered_user.dart';
@@ -22,10 +25,13 @@ class AppRoutes {
   static const String loginPage = '/login';
   static const String eventsPage = '/eventsPage';
   static const String addEventPage = '/addEvent';
+  static const String viewAllAids = '/viewAllAids';
   static const String editEventPage = '/editEvent/';
   static const String userIdentityRequestPage = '/userIdentityRequest/';
   static const String userAccessRequestPage = '/userAccessRequest/';
   static const String eventByIdPage = '/eventByIdPage/';
+  static const String addAids = '/addAids';
+  static const String editAids = '/editAids/';
 }
 
 final GoRouter appRouter = GoRouter(
@@ -55,6 +61,25 @@ final GoRouter appRouter = GoRouter(
       path: AppRoutes.loginPage,
       builder: (context, state) => const LoginPage(),
     ),
+    GoRoute(
+        path: AppRoutes.viewAllAids,
+        builder: (context, state) {
+          return ViewAllAidsPage();
+        }),
+    GoRoute(
+        path: AppRoutes.addAids,
+        builder: (context, state) {
+          return AddOrEditAidPage();
+        }),
+    GoRoute(
+        path: "${AppRoutes.editAids}:aidId",
+        builder: (context, state) {
+          final extra = state.extra;
+          if (extra is AidDistributionModel) {
+            return AddOrEditAidPage(aid: extra);
+          }
+          return const ViewAllAidsPage();
+        }),
     GoRoute(
         path: AppRoutes.eventsPage,
         builder: (context, state) {

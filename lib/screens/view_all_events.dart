@@ -142,6 +142,7 @@ class _EventCardState extends State<EventCard> {
   @override
   void initState() {
     super.initState();
+    // Initialize the `isActive` state to match the event's initial state
     isActive = widget.event.active ?? false;
   }
 
@@ -169,7 +170,6 @@ class _EventCardState extends State<EventCard> {
                 children: [
                   if (event.banner.isNotEmpty)
                     Positioned.fill(
-                      // right: 200,
                       child: ClipRRect(
                         borderRadius: const BorderRadius.only(
                           topLeft: Radius.circular(12),
@@ -275,19 +275,21 @@ class _EventCardState extends State<EventCard> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  // Make sure the switch value is directly tied to the event's active status
                   Switch(
-                    value: isActive,
+                    value: event.active ??
+                        false, // Get the active status from the event directly
                     onChanged: (val) {
-                      setState(() {
-                        isActive = val;
-                      });
-                      provider.updateEvent(widget.event.id, {"active": val});
+                      // Update the event status in the provider
+                      provider.updateEvent(event.id, {"active": val});
+                      // Update active status for the list of events
+                      provider.updateEventActiveStatus(event.id, val);
                     },
                     activeColor: AppColors.primary,
                     inactiveThumbColor: AppColors.light,
                   ),
                   Text(
-                    isActive ? "Active" : "Inactive",
+                    (event.active ?? false) ? "Active" : "Inactive",
                     style: TextStyle(
                       color: AppColors.primary,
                       fontWeight: FontWeight.w500,
