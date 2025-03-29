@@ -1,9 +1,9 @@
+import 'package:dashboard/components/app_loader.dart';
 import 'package:dashboard/components/custom_buttons.dart';
 import 'package:dashboard/components/custom_message.dart';
 import 'package:dashboard/components/custom_textfields.dart';
 import 'package:dashboard/helper/app_colors.dart';
 import 'package:dashboard/helper/app_fonts.dart';
-import 'package:dashboard/helper/loading_dialog.dart';
 import 'package:dashboard/helper/remove_exception_string.dart';
 import 'package:dashboard/provider/auth_provider.dart';
 import 'package:dashboard/routes.dart';
@@ -18,6 +18,7 @@ class SignupPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AuthProvider provider = Provider.of<AuthProvider>(context);
     return ChangeNotifierProvider(
       create: (_) => AuthProvider(),
       child: Scaffold(
@@ -34,7 +35,8 @@ class SignupPage extends StatelessWidget {
                 builder: (context, constraints) {
                   return ConstrainedBox(
                     constraints: BoxConstraints(
-                      maxWidth: MediaQuery.of(context).size.width * 0.4,
+                      maxHeight: 800,
+                      maxWidth: 500,
                     ),
                     child: SingleChildScrollView(
                       child: Column(
@@ -194,9 +196,6 @@ class SignupPage extends StatelessWidget {
                                         child: CustomButton(
                                           text: "Submit Request",
                                           onPressed: () async {
-                                            LoadingDialog.show(context,
-                                                loadingText:
-                                                    "Submitting request...");
                                             try {
                                               await provider.registerProfile();
 
@@ -209,7 +208,6 @@ class SignupPage extends StatelessWidget {
                                                 backgroundColor: Colors.green,
                                               );
                                             } catch (e) {
-                                              LoadingDialog.dismiss(context);
                                               CustomMessage.show(
                                                 context,
                                                 message: removeExceptionPrefix(
@@ -261,6 +259,7 @@ class SignupPage extends StatelessWidget {
                 },
               ),
             ),
+            provider.isLoading ? const AppLoader() : const SizedBox(),
           ],
         ),
       ),

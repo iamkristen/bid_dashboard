@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dashboard/components/custom_appbar.dart';
 import 'package:dashboard/components/not_found_widget.dart';
+import 'package:dashboard/components/side_menu.dart';
 import 'package:dashboard/helper/app_colors.dart';
 import 'package:dashboard/helper/app_fonts.dart';
 import 'package:dashboard/provider/access_request_provider.dart';
@@ -39,6 +40,7 @@ class _ViewAccessRequestPageState extends State<ViewAccessRequestPage> {
 
     return Scaffold(
       appBar: const CustomAppBar(title: "View All Access Requests"),
+      drawer: const SideMenu(),
       body: Stack(
         children: [
           Lottie.asset("lottie/background.json", width: 400, height: 400),

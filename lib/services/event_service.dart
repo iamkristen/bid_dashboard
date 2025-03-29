@@ -7,7 +7,7 @@ class EventService {
   final Dio _dio = DioClient().dio;
 
   // Fetch all events
-  Future<List<EventModel>> fetchAllEvents() async {
+  Future<List<EventModel>> fetchAllEventsForAdmin() async {
     try {
       final data = await _dio.get("/event/getAll");
       final res = ResponseHelper.fromJson(data.data);
@@ -40,9 +40,9 @@ class EventService {
     }
   }
 
-  Future<List<EventModel>> fetchEventsByBrahmaID(String brahmaID) async {
+  Future<List<EventModel>> fetchAllEventsForOrg(String hostId) async {
     try {
-      final data = await _dio.get("/event/byBrahmaID/$brahmaID");
+      final data = await _dio.get("/event/hostID/$hostId");
       final res = ResponseHelper.fromJson(data.data);
       if (!res.success) {
         throw Exception(res.message);

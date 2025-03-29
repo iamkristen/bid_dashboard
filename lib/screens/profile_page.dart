@@ -1,35 +1,39 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dashboard/components/app_loader.dart';
 import 'package:dashboard/components/custom_appbar.dart';
-import 'package:dashboard/components/custom_message.dart';
 import 'package:dashboard/components/not_found_widget.dart';
 import 'package:dashboard/helper/app_colors.dart';
 import 'package:dashboard/helper/app_fonts.dart';
-import 'package:dashboard/helper/remove_exception_string.dart';
-import 'package:dashboard/helper/status_helper.dart';
+import 'package:dashboard/helper/secure_storage.dart';
 import 'package:dashboard/provider/access_request_provider.dart';
 import 'package:dashboard/provider/auth_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import 'dart:html' as html;
 
-class UserAccessRequestPage extends StatefulWidget {
-  final String userId;
-
-  const UserAccessRequestPage({super.key, required this.userId});
+class ProfilePage extends StatefulWidget {
+  const ProfilePage({
+    super.key,
+  });
 
   @override
-  State<UserAccessRequestPage> createState() => _UserAccessRequestPageState();
+  State<ProfilePage> createState() => _ProfilePageState();
 }
 
-class _UserAccessRequestPageState extends State<UserAccessRequestPage> {
+class _ProfilePageState extends State<ProfilePage> {
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final accessRequestProvider = context.read<AccessRequestProvider>();
-      accessRequestProvider.fetchRequestById(widget.userId);
+      SecureStorage.read("token").then((token) {
+        if (token != null) {
+          final email = JwtDecoder.decode(token)["email"];
+          final accessRequestProvider = context.read<AccessRequestProvider>();
+          accessRequestProvider.fetchRequestByEmail(email);
+        }
+      });
     });
   }
 
@@ -172,113 +176,6 @@ class _UserAccessRequestPageState extends State<UserAccessRequestPage> {
                                         );
                                       },
                                     ).toList(),
-                                  ),
-
-                                  const SizedBox(height: 20),
-
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
-                                    children: [
-                                      ElevatedButton.icon(
-                                        onPressed: () async {
-                                          try {
-                                            final res =
-                                                await authProvider.signup(
-                                              accessRequestProvider
-                                                  .request!.email,
-                                            );
-
-                                            final updateData =
-                                                await accessRequestProvider
-                                                    .updateRequest(
-                                                        accessRequestProvider
-                                                            .request!.id!,
-                                                        {
-                                                  "status":
-                                                      StatusHelper.getValue(
-                                                          Status.approved),
-                                                });
-
-                                            if (res && updateData) {
-                                              if (!context.mounted) return;
-                                              CustomMessage.show(context,
-                                                  message: "Request Approved",
-                                                  backgroundColor:
-                                                      Colors.green);
-                                            }
-
-                                            Navigator.pop(context);
-                                          } catch (e) {
-                                            if (!context.mounted) return;
-
-                                            CustomMessage.show(context,
-                                                message: removeExceptionPrefix(
-                                                    e.toString()),
-                                                backgroundColor: Colors.red);
-                                          }
-                                        },
-                                        icon: const Icon(Icons.check,
-                                            color: Colors.white),
-                                        label: const Text(
-                                          "Approve",
-                                          style:
-                                              AppTextStyles.poppinsRegularStyle,
-                                        ),
-                                        style: ElevatedButton.styleFrom(
-                                          backgroundColor: Colors.green,
-                                        ),
-                                      ),
-                                      ElevatedButton.icon(
-                                        onPressed: () async {
-                                          try {
-                                            final res = await authProvider
-                                                .sendRejectionEmail(
-                                              email: accessRequestProvider
-                                                  .request!.email,
-                                              name: accessRequestProvider
-                                                  .request!.name,
-                                            );
-                                            final updateData =
-                                                await accessRequestProvider
-                                                    .updateRequest(
-                                                        accessRequestProvider
-                                                            .request!.id!,
-                                                        {
-                                                  "status":
-                                                      StatusHelper.getValue(
-                                                          Status.rejected),
-                                                });
-
-                                            if (res && updateData) {
-                                              if (!context.mounted) return;
-                                              CustomMessage.show(context,
-                                                  message: "Request Rejected",
-                                                  backgroundColor: Colors.red);
-                                            }
-
-                                            Navigator.pop(context);
-                                          } catch (e) {
-                                            if (!context.mounted) return;
-
-                                            CustomMessage.show(context,
-                                                message: removeExceptionPrefix(
-                                                    e.toString()),
-                                                backgroundColor: Colors.red);
-                                          }
-                                        },
-                                        icon: const Icon(Icons.close,
-                                            color: Colors.white),
-                                        label: const Text(
-                                          "Reject",
-                                          style:
-                                              AppTextStyles.poppinsRegularStyle,
-                                        ),
-                                        style: ElevatedButton.styleFrom(
-                                          backgroundColor: Colors.red,
-                                        ),
-                                      ),
-                                    ],
                                   ),
                                 ],
                               ),

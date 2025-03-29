@@ -63,6 +63,30 @@ class AuthService {
     }
   }
 
+  Future<void> changePassword(
+    String id,
+    String oldPassword,
+    String newPassword,
+  ) async {
+    try {
+      final response = await _dio.post(
+        "/auth/change-password/$id",
+        data: {
+          "old_password": oldPassword,
+          "new_password": newPassword,
+        },
+      );
+      if (response.data["status"] == "error") {
+        throw Exception(response.data["message"]);
+      }
+    } on DioException catch (e) {
+      String errorMessage = _handleDioError(e);
+      throw Exception(errorMessage);
+    } catch (e) {
+      throw Exception("Something went wrong. Please try again later.");
+    }
+  }
+
   // Error Handling
   String _handleDioError(DioException error) {
     if (error.response != null) {

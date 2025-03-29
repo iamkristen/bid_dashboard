@@ -39,6 +39,22 @@ class AccessRequestService {
     }
   }
 
+  Future<AccessRequestModel> fetchRequestByEmail(String email) async {
+    try {
+      final response = await _dio.get("/profile/getProfileByEmail/$email");
+      final data = ResponseHelper.fromJson(response.data);
+      if (!data.success) {
+        throw Exception(data.message);
+      }
+      return AccessRequestModel.fromJson(data.data);
+    } on DioException catch (e) {
+      String errorMessage = _handleDioError(e);
+      throw Exception(errorMessage);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   /// create access request
   Future<AccessRequestModel> createRequest(
       Map<String, dynamic> requestData) async {

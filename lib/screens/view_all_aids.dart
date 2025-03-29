@@ -1,4 +1,5 @@
 import 'package:dashboard/components/custom_buttons.dart';
+import 'package:dashboard/components/side_menu.dart';
 import 'package:dashboard/helper/app_colors.dart';
 import 'package:dashboard/models/aid_distribution_model.dart';
 import 'package:dashboard/provider/aid_distribution_provider.dart';
@@ -31,6 +32,7 @@ class _ViewAllAidsPageState extends State<ViewAllAidsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(title: "Aid Distribution"),
+      drawer: const SideMenu(),
       body: Column(
         children: [
           Align(
@@ -164,10 +166,12 @@ class AidCard extends StatelessWidget {
                   if (aid.notes!.isNotEmpty)
                     Padding(
                       padding: const EdgeInsets.only(top: 8),
-                      child: Flexible(
-                        child: Text("Notes: ${aid.notes}",
-                            style: AppTextStyles.poppinsRegularStyle
-                                .copyWith(color: Colors.red, fontSize: 14)),
+                      child: Text(
+                        "Notes: ${aid.notes}",
+                        style: AppTextStyles.poppinsRegularStyle
+                            .copyWith(color: Colors.red, fontSize: 14),
+                        softWrap: true,
+                        overflow: TextOverflow.fade,
                       ),
                     ),
                   const SizedBox(height: 12),

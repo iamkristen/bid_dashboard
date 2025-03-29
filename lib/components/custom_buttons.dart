@@ -63,10 +63,10 @@ class CustomButton extends StatelessWidget {
                 .open(context)
             : onPressed,
         child: icon == null
-            ? Flexible(
-                child: Text(
-                  text,
-                  style: TextStyle(fontSize: fontSize ?? 16),
+            ? Text(
+                text,
+                style: TextStyle(
+                  fontSize: fontSize ?? 16,
                 ),
               )
             : Row(
@@ -75,13 +75,13 @@ class CustomButton extends StatelessWidget {
                 children: [
                   Icon(icon, size: 20),
                   const SizedBox(width: 8),
-                  Flexible(
-                    child: Text(
-                      text,
-                      style: AppTextStyles.poppinsRegularStyle.copyWith(
-                        fontSize: fontSize ?? 16,
-                      ),
+                  Text(
+                    text,
+                    style: AppTextStyles.poppinsRegularStyle.copyWith(
+                      fontSize: fontSize ?? 16,
                     ),
+                    softWrap: true,
+                    overflow: TextOverflow.fade,
                   ),
                 ],
               ),

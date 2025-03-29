@@ -1,86 +1,115 @@
-import 'package:dashboard/helper/app_colors.dart';
-import 'package:dashboard/helper/app_fonts.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:dashboard/helper/app_colors.dart';
+import 'package:dashboard/helper/app_fonts.dart';
+import 'package:dashboard/helper/secure_storage.dart';
+import 'package:dashboard/helper/storage_constant.dart';
 import '../routes.dart';
 
-class SideMenu extends StatelessWidget {
+class SideMenu extends StatefulWidget {
   const SideMenu({super.key});
 
   @override
+  State<SideMenu> createState() => _SideMenuState();
+}
+
+class _SideMenuState extends State<SideMenu> {
+  String? role;
+  bool _loading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserRole();
+  }
+
+  Future<void> _loadUserRole() async {
+    final storedRole = await SecureStorage.read(StorageConstant.role);
+    if (mounted) {
+      setState(() {
+        role = storedRole ?? "user";
+        _loading = false;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    if (_loading) {
+      return const Drawer(
+        child: Center(
+          child: CircularProgressIndicator(
+            color: AppColors.primary,
+          ),
+        ),
+      );
+    }
+
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
         children: [
           DrawerHeader(
             decoration: BoxDecoration(color: AppColors.primary),
-            child: Image.asset(
-              "logo.png",
+            child: Image.asset("logo.png"),
+          ),
+          _buildMenuItem(
+            context,
+            title: "Profile",
+            onTap: () => context.go(AppRoutes.profilePage),
+            trailing: IconButton(
+              icon: const Icon(Icons.settings),
+              onPressed: () => context.go(AppRoutes.profileSettingsPage),
             ),
           ),
-          ListTile(
-            title: Text(
-              "Dashboard",
-              style: AppTextStyles.poppinsRegularStyle
-                  .copyWith(color: AppColors.primary),
-            ),
-            onTap: () {
-              context.go(AppRoutes.dashboardPage);
-            },
+          _buildMenuItem(
+            context,
+            title: "Dashboard",
+            onTap: () => context.go(AppRoutes.dashboardPage),
           ),
-          ListTile(
-            title: Text(
-              "View Registered Users",
-              style: AppTextStyles.poppinsRegularStyle
-                  .copyWith(color: AppColors.primary),
+          if (role == 'admin') ...[
+            _buildMenuItem(
+              context,
+              title: "View Registered Users",
+              onTap: () => context.go(AppRoutes.viewAllRegisteredUser),
             ),
-            onTap: () {
-              context.go(AppRoutes.viewAllRegisteredUser);
-            },
+            _buildMenuItem(
+              context,
+              title: "View Identity Requests",
+              onTap: () => context.go(AppRoutes.viewIdentityRequestPage),
+            ),
+            _buildMenuItem(
+              context,
+              title: "View Access Requests",
+              onTap: () => context.go(AppRoutes.viewAccessRequestPage),
+            ),
+          ],
+          _buildMenuItem(
+            context,
+            title: "View All Events",
+            onTap: () => context.go(AppRoutes.eventsPage),
           ),
-          ListTile(
-            title: Text(
-              "View Identity Requests",
-              style: AppTextStyles.poppinsRegularStyle
-                  .copyWith(color: AppColors.primary),
-            ),
-            onTap: () {
-              context.go(AppRoutes.viewIdentityRequestPage);
-            },
-          ),
-          ListTile(
-            title: Text(
-              "View Access Requests ",
-              style: AppTextStyles.poppinsRegularStyle
-                  .copyWith(color: AppColors.primary),
-            ),
-            onTap: () {
-              context.go(AppRoutes.viewAccessRequestPage);
-            },
-          ),
-          ListTile(
-            title: Text(
-              "View All Events",
-              style: AppTextStyles.poppinsRegularStyle
-                  .copyWith(color: AppColors.primary),
-            ),
-            onTap: () {
-              context.go(AppRoutes.eventsPage);
-            },
-          ),
-          ListTile(
-            title: Text(
-              "View All Aids",
-              style: AppTextStyles.poppinsRegularStyle
-                  .copyWith(color: AppColors.primary),
-            ),
-            onTap: () {
-              context.go(AppRoutes.viewAllAids);
-            },
+          _buildMenuItem(
+            context,
+            title: "View All Aids",
+            onTap: () => context.go(AppRoutes.viewAllAids),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildMenuItem(BuildContext context,
+      {required String title, required VoidCallback onTap, Widget? trailing}) {
+    return ListTile(
+      title: Text(
+        title,
+        style: AppTextStyles.poppinsRegularStyle.copyWith(
+          color: AppColors.primary,
+        ),
+      ),
+      trailing: trailing,
+      onTap: onTap,
     );
   }
 }

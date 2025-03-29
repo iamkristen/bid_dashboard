@@ -2,6 +2,10 @@ import 'package:dashboard/models/aid_distribution_model.dart';
 import 'package:dashboard/models/event_models.dart';
 import 'package:dashboard/screens/add_edit_aids.dart';
 import 'package:dashboard/screens/add_edit_event_page.dart';
+import 'package:dashboard/screens/change_password_page.dart';
+import 'package:dashboard/screens/profile_page.dart';
+import 'package:dashboard/screens/profile_settings_page.dart';
+import 'package:dashboard/screens/splash_screen.dart';
 import 'package:dashboard/screens/view_all_access_request_page.dart';
 import 'package:dashboard/screens/dashboard_screen.dart';
 import 'package:dashboard/screens/login_screen.dart';
@@ -18,11 +22,15 @@ import 'package:go_router/go_router.dart';
 
 class AppRoutes {
   static const String dashboardPage = '/';
+  static const String splashScreen = '/splashScreen';
   static const String viewIdentityRequestPage = '/identityRequest';
   static const String viewAccessRequestPage = '/accessRequest';
   static const String viewAllRegisteredUser = '/viewRegisteredUser';
   static const String signupPage = '/signup';
   static const String loginPage = '/login';
+  static const String changePasswordPage = '/changePassword';
+  static const String profilePage = '/profile';
+  static const String profileSettingsPage = '/profileSettings';
   static const String eventsPage = '/eventsPage';
   static const String addEventPage = '/addEvent';
   static const String viewAllAids = '/viewAllAids';
@@ -35,12 +43,27 @@ class AppRoutes {
 }
 
 final GoRouter appRouter = GoRouter(
-  // initialLocation: AppRoutes.loginPage,
+  initialLocation: AppRoutes.splashScreen,
   routes: [
+    GoRoute(
+        path: AppRoutes.splashScreen,
+        builder: (context, state) {
+          return const SplashScreen();
+        }),
     GoRoute(
       path: AppRoutes.dashboardPage,
       builder: (context, state) => const DashboardPage(),
     ),
+    GoRoute(
+        path: AppRoutes.profilePage,
+        builder: (context, state) {
+          return const ProfilePage();
+        }),
+    GoRoute(
+        path: AppRoutes.profileSettingsPage,
+        builder: (context, state) {
+          return const ProfileSettingsPage();
+        }),
     GoRoute(
       path: AppRoutes.viewAllRegisteredUser,
       builder: (context, state) => const ViewAllRegisteredUser(),
@@ -61,6 +84,11 @@ final GoRouter appRouter = GoRouter(
       path: AppRoutes.loginPage,
       builder: (context, state) => const LoginPage(),
     ),
+    GoRoute(
+        path: AppRoutes.changePasswordPage,
+        builder: (context, state) {
+          return ChangePasswordPage();
+        }),
     GoRoute(
         path: AppRoutes.viewAllAids,
         builder: (context, state) {

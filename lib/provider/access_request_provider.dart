@@ -53,6 +53,18 @@ class AccessRequestProvider with ChangeNotifier {
     }
   }
 
+  Future<String> fetchRequestByEmail(String email) async {
+    try {
+      setLoading(true);
+      _request = await _service.fetchRequestByEmail(email);
+      setLoading(false);
+      return "Success";
+    } catch (e) {
+      setLoading(false);
+      return e.toString();
+    }
+  }
+
   /// Get the count of access requests
   Future<void> getRequestCount() async {
     try {

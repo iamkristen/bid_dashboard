@@ -7,14 +7,11 @@ import 'package:dashboard/provider/event_provider.dart';
 import 'package:dashboard/provider/identity_request_provider.dart';
 import 'package:dashboard/provider/registered_user_provider.dart';
 import 'package:dashboard/routes.dart';
-import 'package:dashboard/services/shared_preferences_service.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_quill/flutter_quill.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await SharedPreferencesService.getInstance();
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(
         create: (_) => IdentityRequestProvider()..fetchAllRequests()),
@@ -44,12 +41,6 @@ class MyApp extends StatelessWidget {
           iconTheme: const IconThemeData(color: Colors.white),
         ),
       ),
-      localizationsDelegates: const [
-        FlutterQuillLocalizations.delegate,
-      ],
-      supportedLocales: const [
-        Locale('en'),
-      ],
       routerConfig: appRouter,
     );
   }

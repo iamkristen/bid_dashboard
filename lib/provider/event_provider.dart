@@ -1,8 +1,9 @@
 import 'dart:typed_data';
-
+import 'package:flutter/material.dart';
+import 'package:dashboard/helper/secure_storage.dart';
+import 'package:dashboard/helper/storage_constant.dart';
 import 'package:dashboard/models/event_models.dart';
 import 'package:dashboard/services/upload_services.dart';
-import 'package:flutter/material.dart';
 import 'package:dashboard/services/event_service.dart';
 import 'dart:html' as html;
 
@@ -21,6 +22,15 @@ class EventProvider with ChangeNotifier {
   Uint8List? bannerbytes;
 
   String _selectedFilter = 'All';
+
+  // Form State Controllers
+  final titleController = TextEditingController();
+  final locationController = TextEditingController();
+  final descriptionController = TextEditingController();
+
+  DateTime? startTime;
+  DateTime? endTime;
+  bool isActive = true;
 
   List<EventModel> get events => _events;
   EventModel? get selectedEvent => _selectedEvent;
@@ -45,9 +55,18 @@ class EventProvider with ChangeNotifier {
       return _events
           .where((e) => DateTime.parse(e.endTime).isBefore(DateTime.now()))
           .toList();
-    } else {
-      return _events;
     }
+    return _events;
+  }
+
+  void resetFormData({EventModel? event}) {
+    titleController.text = event?.title ?? '';
+    locationController.text = event?.location ?? '';
+    descriptionController.text = event?.description ?? '';
+    startTime = event != null ? DateTime.parse(event.startTime) : null;
+    endTime = event != null ? DateTime.parse(event.endTime) : null;
+    isActive = event?.active ?? true;
+    notifyListeners();
   }
 
   void setFilter(String filter) {
@@ -58,6 +77,46 @@ class EventProvider with ChangeNotifier {
   void setLoading(bool value) {
     _isLoading = value;
     notifyListeners();
+  }
+
+  Future<void> createEventFromState() async {
+    setLoading(true);
+    _error = null;
+
+    try {
+      if (bannerbytes == null) {
+        throw Exception('Please upload a banner for the event');
+      }
+
+      final email = await SecureStorage.read(StorageConstant.email);
+      final organization = await SecureStorage.read(StorageConstant.orgName);
+      final banner = await uploadServices.uploadSingleFile(
+        fileName,
+        bannerbytes!,
+        mimeType,
+      );
+
+      final eventData = {
+        'title': titleController.text.trim(),
+        'description': descriptionController.text.trim(),
+        'location': locationController.text.trim(),
+        'startTime': startTime!.toIso8601String(),
+        'endTime': endTime!.toIso8601String(),
+        'active': isActive,
+        'hostID': email ?? "",
+        'organization': organization,
+        'banner': banner['url'],
+      };
+      print('Event data: $eventData');
+      final createdEvent = await _eventService.createEvent(eventData);
+      _events.add(createdEvent);
+      notifyListeners();
+    } catch (e) {
+      _error = e.toString();
+      throw Exception(_error);
+    } finally {
+      setLoading(false);
+    }
   }
 
   void updateEventActiveStatus(String eventId, bool activeStatus) {
@@ -94,7 +153,14 @@ class EventProvider with ChangeNotifier {
     _error = null;
 
     try {
-      _events = await _eventService.fetchAllEvents();
+      final role = await SecureStorage.read(StorageConstant.role);
+      final email = await SecureStorage.read(StorageConstant.email);
+      if (role == 'admin') {
+        _events = await _eventService.fetchAllEventsForAdmin();
+      }
+      if (role == 'org' && email != null) {
+        _events = await _eventService.fetchAllEventsForOrg(email);
+      }
     } catch (e) {
       _error = e.toString();
     } finally {
@@ -108,19 +174,6 @@ class EventProvider with ChangeNotifier {
 
     try {
       _selectedEvent = await _eventService.fetchEventById(id);
-    } catch (e) {
-      _error = e.toString();
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  Future<void> fetchEventsForUser(String brahmaID) async {
-    setLoading(true);
-    _error = null;
-
-    try {
-      _events = await _eventService.fetchEventsByBrahmaID(brahmaID);
     } catch (e) {
       _error = e.toString();
     } finally {

@@ -2,6 +2,8 @@ import 'package:dashboard/components/custom_appbar.dart';
 import 'package:dashboard/components/side_menu.dart';
 import 'package:dashboard/helper/app_colors.dart';
 import 'package:dashboard/helper/app_fonts.dart';
+import 'package:dashboard/helper/secure_storage.dart';
+import 'package:dashboard/helper/storage_constant.dart';
 import 'package:dashboard/provider/access_request_provider.dart';
 import 'package:dashboard/provider/identity_request_provider.dart';
 import 'package:dashboard/provider/registered_user_provider.dart';
@@ -10,7 +12,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
@@ -23,15 +24,13 @@ class _DashboardPageState extends State<DashboardPage> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<IdentityRequestProvider>(context, listen: false)
-          .getRequestCount();
-      Provider.of<AccessRequestProvider>(context, listen: false)
-          .getRequestCount();
-      SharedPreferences.getInstance().then((prefs) {
-        print(prefs.getString("token"));
-        print(prefs.getString("email"));
-      });
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final identityProvider =
+          Provider.of<IdentityRequestProvider>(context, listen: false);
+      final accessProvider =
+          Provider.of<AccessRequestProvider>(context, listen: false);
+      await identityProvider.getRequestCount();
+      await accessProvider.getRequestCount();
     });
   }
 
@@ -41,7 +40,7 @@ class _DashboardPageState extends State<DashboardPage> {
       appBar: CustomAppBar(
         title: "Dashboard",
       ),
-      drawer: SideMenu(),
+      drawer: const SideMenu(),
       body: Stack(
         children: [
           Lottie.asset("lottie/background.json", width: 400, height: 400),

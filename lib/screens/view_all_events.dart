@@ -1,5 +1,6 @@
 import 'package:dashboard/components/custom_appbar.dart';
 import 'package:dashboard/components/custom_buttons.dart';
+import 'package:dashboard/components/side_menu.dart';
 import 'package:dashboard/helper/app_colors.dart';
 import 'package:dashboard/helper/app_fonts.dart';
 import 'package:dashboard/models/event_models.dart';
@@ -31,7 +32,8 @@ class _UserEventsPageState extends State<UserEventsPage> {
     return DefaultTabController(
       length: 5,
       child: Scaffold(
-        appBar: CustomAppBar(title: "Events"),
+        appBar: CustomAppBar(title: "View All Events"),
+        drawer: const SideMenu(),
         body: Column(
           children: [
             Padding(
@@ -127,217 +129,163 @@ class _UserEventsPageState extends State<UserEventsPage> {
   }
 }
 
-class EventCard extends StatefulWidget {
+class EventCard extends StatelessWidget {
   final EventModel event;
 
   const EventCard({super.key, required this.event});
 
   @override
-  State<EventCard> createState() => _EventCardState();
-}
-
-class _EventCardState extends State<EventCard> {
-  late bool isActive;
-
-  @override
-  void initState() {
-    super.initState();
-    // Initialize the `isActive` state to match the event's initial state
-    isActive = widget.event.active ?? false;
-  }
-
-  @override
   Widget build(BuildContext context) {
     final provider = Provider.of<EventProvider>(context, listen: false);
-    final event = widget.event;
     final start = DateFormat('dd MMM yyyy, hh:mm a')
         .format(DateTime.parse(event.startTime));
     final end = DateFormat('dd MMM yyyy, hh:mm a')
         .format(DateTime.parse(event.endTime));
 
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      elevation: 5,
+    return Container(
+      height: 200,
       margin: const EdgeInsets.only(bottom: 16),
-      color: Colors.white,
-      child: IntrinsicHeight(
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Expanded(
-              flex: 3,
-              child: Stack(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: const [
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 6,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          ClipRRect(
+            borderRadius: const BorderRadius.horizontal(
+              left: Radius.circular(12),
+            ),
+            child: ShaderMask(
+              shaderCallback: (bounds) => const LinearGradient(
+                begin: Alignment.centerRight,
+                end: Alignment.centerLeft,
+                colors: [Colors.transparent, Colors.black],
+              ).createShader(bounds),
+              blendMode: BlendMode.dstIn,
+              child: Image.network(
+                event.banner,
+                width: 120,
+                height: double.infinity,
+                fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) => const SizedBox(),
+              ),
+            ),
+          ),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 14),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  if (event.banner.isNotEmpty)
-                    Positioned.fill(
-                      child: ClipRRect(
-                        borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(12),
-                          bottomLeft: Radius.circular(12),
-                        ),
-                        child: ShaderMask(
-                          shaderCallback: (Rect bounds) {
-                            return const LinearGradient(
-                              begin: Alignment.centerRight,
-                              end: Alignment.centerLeft,
-                              colors: [
-                                Colors.transparent,
-                                Colors.black,
-                              ],
-                            ).createShader(bounds);
-                          },
-                          blendMode: BlendMode.dstIn,
-                          child: Padding(
-                            padding: const EdgeInsets.only(right: 2.0),
-                            child: Image.network(
-                              event.banner,
-                              fit: BoxFit.cover,
-                              errorBuilder: (_, __, ___) => const SizedBox(),
-                            ),
-                          ),
+                  Text(
+                    event.title,
+                    style: AppTextStyles.icebergStyle
+                        .copyWith(fontSize: 18, color: AppColors.primary),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    event.description,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTextStyles.poppinsRegularStyle.copyWith(
+                      fontSize: 14,
+                      color: AppColors.primary,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      const Icon(Icons.access_time,
+                          size: 14, color: AppColors.primary),
+                      const SizedBox(width: 4),
+                      Expanded(
+                        child: Text(
+                          "$start - $end",
+                          style: AppTextStyles.poppinsRegularStyle
+                              .copyWith(fontSize: 12, color: AppColors.primary),
                         ),
                       ),
-                    ),
-                  Container(
-                    decoration: BoxDecoration(
-                      borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(12),
-                          bottomLeft: Radius.circular(12)),
-                      color: Colors.white.withOpacity(0.5),
-                    ),
+                    ],
                   ),
-                  Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          event.title,
-                          style: AppTextStyles.icebergStyle
-                              .copyWith(fontSize: 20, color: AppColors.primary),
-                        ),
-                        const SizedBox(height: 6),
-                        Text(
-                          event.description,
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      const Icon(Icons.location_on_outlined,
+                          size: 14, color: AppColors.primary),
+                      const SizedBox(width: 4),
+                      Expanded(
+                        child: Text(
+                          event.location,
                           style: AppTextStyles.poppinsRegularStyle.copyWith(
-                            fontSize: 14,
+                            fontSize: 12,
                             color: AppColors.primary,
                           ),
-                          maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
-                        const SizedBox(height: 12),
-                        Row(
-                          children: [
-                            const Icon(Icons.access_time,
-                                size: 16, color: AppColors.primary),
-                            const SizedBox(width: 4),
-                            Flexible(
-                              child: Text(
-                                "$start - $end",
-                                style: AppTextStyles.poppinsRegularStyle
-                                    .copyWith(
-                                        fontSize: 12, color: AppColors.primary),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 4),
-                        Row(
-                          children: [
-                            const Icon(Icons.location_on_outlined,
-                                size: 16, color: AppColors.primary),
-                            const SizedBox(width: 4),
-                            Flexible(
-                              child: Text(
-                                event.location,
-                                style: AppTextStyles.poppinsRegularStyle
-                                    .copyWith(
-                                        fontSize: 12, color: AppColors.primary),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
+                  const SizedBox(height: 20),
+                  const Divider(
+                    color: AppColors.light,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          Switch(
+                            value: event.active ?? false,
+                            onChanged: (val) {
+                              provider.updateEvent(event.id, {"active": val});
+                              provider.updateEventActiveStatus(event.id, val);
+                            },
+                            activeColor: AppColors.primary,
+                            inactiveThumbColor: AppColors.light,
+                          ),
+                          Text(
+                            (event.active ?? false) ? "Active" : "Inactive",
+                            style: TextStyle(
+                              color: AppColors.primary,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.edit,
+                                color: AppColors.primary),
+                            onPressed: () {
+                              context.go(
+                                  "${AppRoutes.editEventPage}${event.id}",
+                                  extra: event);
+                            },
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.delete_outline,
+                                color: Colors.red),
+                            onPressed: () {
+                              provider.deleteEvent(event.id);
+                            },
+                          ),
+                        ],
+                      ),
+                    ],
+                  )
                 ],
               ),
             ),
-            const VerticalDivider(
-              color: AppColors.light,
-              thickness: 1,
-              width: 32,
-            ),
-            Expanded(
-              flex: 1,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // Make sure the switch value is directly tied to the event's active status
-                  Switch(
-                    value: event.active ??
-                        false, // Get the active status from the event directly
-                    onChanged: (val) {
-                      // Update the event status in the provider
-                      provider.updateEvent(event.id, {"active": val});
-                      // Update active status for the list of events
-                      provider.updateEventActiveStatus(event.id, val);
-                    },
-                    activeColor: AppColors.primary,
-                    inactiveThumbColor: AppColors.light,
-                  ),
-                  Text(
-                    (event.active ?? false) ? "Active" : "Inactive",
-                    style: TextStyle(
-                      color: AppColors.primary,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const VerticalDivider(
-              color: AppColors.light,
-              thickness: 1,
-              width: 32,
-            ),
-            Expanded(
-              flex: 1,
-              child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    CustomButton(
-                      text: "Edit",
-                      width: double.infinity,
-                      onPressed: () {
-                        context.go("${AppRoutes.editEventPage}${event.id}",
-                            extra: event);
-                      },
-                      icon: Icons.edit,
-                    ),
-                    const SizedBox(height: 10),
-                    CustomButton(
-                      text: "Delete",
-                      width: double.infinity,
-                      onPressed: () {
-                        final provider =
-                            Provider.of<EventProvider>(context, listen: false);
-                        provider.deleteEvent(event.id);
-                      },
-                      icon: Icons.delete_outline,
-                      backgroundColor: Colors.redAccent,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

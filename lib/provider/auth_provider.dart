@@ -2,13 +2,16 @@
 import 'dart:html' as html;
 import 'dart:typed_data';
 import 'package:dashboard/helper/exception_helper.dart';
+import 'package:dashboard/helper/secure_storage.dart';
+import 'package:dashboard/helper/storage_constant.dart';
 import 'package:dashboard/models/access_request_model.dart';
+import 'package:dashboard/provider/access_request_provider.dart';
 import 'package:dashboard/services/access_request_services.dart';
 import 'package:dashboard/services/auth_services.dart';
 import 'package:dashboard/services/email_sender.dart';
-import 'package:dashboard/services/shared_preferences_service.dart';
 import 'package:dashboard/services/upload_services.dart';
 import 'package:flutter/material.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
 
 class AuthProvider extends ChangeNotifier {
   AuthService authService = AuthService();
@@ -161,7 +164,6 @@ class AuthProvider extends ChangeNotifier {
         supportingDocuments: urls,
       );
 
-      // Submit the profile
       final AccessRequestModel res = await accessRequestService
           .createRequest(profile.toJson(forUpdate: false));
       clear();
@@ -172,7 +174,7 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> login() async {
+  Future<String> login() async {
     try {
       setLoading(true);
       if (emailController.text.isEmpty || passwordController.text.isEmpty) {
@@ -181,15 +183,24 @@ class AuthProvider extends ChangeNotifier {
       }
       final data = await authService.login(
           emailController.text.trim(), passwordController.text.trim());
-      await SharedPreferencesService.getInstance().then((prefs) {
-        prefs.setString("token", data["token"]);
-        prefs.setString("email", emailController.text.trim());
-      });
-      setLoading(false);
+      final AccessRequestProvider accessRequestProvider =
+          AccessRequestProvider();
+
+      await SecureStorage.save(StorageConstant.token, data["token"]);
+      final tokenData = JwtDecoder.decode(data["token"]);
+      await accessRequestProvider.fetchRequestByEmail(tokenData["email"]);
+      await SecureStorage.save(StorageConstant.role, tokenData["role"]);
+      await SecureStorage.save(StorageConstant.userId, tokenData["id"]);
+      await SecureStorage.save(StorageConstant.email, tokenData["email"]);
+      await SecureStorage.save(
+          StorageConstant.orgName, accessRequestProvider.request!.name);
       clear();
+      return data["token"];
     } catch (e) {
       setLoading(false);
       rethrow;
+    } finally {
+      setLoading(false);
     }
   }
 

@@ -9,7 +9,6 @@ import 'package:dashboard/helper/remove_exception_string.dart';
 import 'package:dashboard/models/aid_distribution_model.dart';
 import 'package:dashboard/provider/aid_distribution_provider.dart';
 import 'package:dashboard/routes.dart';
-import 'package:dashboard/services/shared_preferences_service.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
@@ -76,9 +75,7 @@ class _AddOrEditAidPageState extends State<AddOrEditAidPage> {
 
   void _submitForm() async {
     if (!_formKey.currentState!.validate()) return;
-    await SharedPreferencesService.getInstance().then((prefs) {
-      _email = prefs.getString("email");
-    });
+
     try {
       final aidData = {
         'beneficiaryId': "localhost@mail.com",
