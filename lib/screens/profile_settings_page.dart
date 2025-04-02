@@ -66,7 +66,7 @@ class ProfileSettingsPage extends StatelessWidget {
                         title: "Update Profile",
                         icon: Icons.edit_outlined,
                         onTap: () {
-                          // Navigator.pushNamed(context, AppRoutes.changeEmailPage);
+                          context.go(AppRoutes.updateProfile);
                         },
                       ),
                     ],

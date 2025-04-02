@@ -51,9 +51,10 @@ class AuthService {
   // Logout Method
   Future<void> logout() async {
     try {
-      final response = await _dio.post("/auth/logout");
-      if (response.data["status"] == "error") {
-        throw Exception(response.data["message"]);
+      final data = await _dio.post("/auth/logout");
+      final response = ResponseHelper.fromJson(data.data);
+      if (!response.success) {
+        throw Exception(response.message);
       }
     } on DioException catch (e) {
       String errorMessage = _handleDioError(e);
@@ -69,21 +70,22 @@ class AuthService {
     String newPassword,
   ) async {
     try {
-      final response = await _dio.post(
-        "/auth/change-password/$id",
+      final data = await _dio.put(
+        "/auth/changePassword/$id",
         data: {
-          "old_password": oldPassword,
-          "new_password": newPassword,
+          "oldPassword": oldPassword,
+          "newPassword": newPassword,
         },
       );
-      if (response.data["status"] == "error") {
-        throw Exception(response.data["message"]);
+      final response = ResponseHelper.fromJson(data.data);
+      if (!response.success) {
+        throw Exception(response.message);
       }
     } on DioException catch (e) {
       String errorMessage = _handleDioError(e);
       throw Exception(errorMessage);
     } catch (e) {
-      throw Exception("Something went wrong. Please try again later.");
+      rethrow;
     }
   }
 

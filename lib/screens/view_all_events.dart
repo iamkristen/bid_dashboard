@@ -191,7 +191,7 @@ class EventCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    event.description,
+                    event.organizer,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: AppTextStyles.poppinsRegularStyle.copyWith(

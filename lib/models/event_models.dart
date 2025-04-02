@@ -3,6 +3,7 @@ class EventModel {
   final String hostID;
   final String title;
   final String banner;
+  final String organizer;
   final String description;
   final String startTime;
   final String endTime;
@@ -13,6 +14,7 @@ class EventModel {
     required this.id,
     required this.hostID,
     required this.title,
+    required this.organizer,
     required this.banner,
     required this.description,
     required this.startTime,
@@ -26,6 +28,7 @@ class EventModel {
       id: json['_id'],
       hostID: json['hostID'],
       title: json['title'],
+      organizer: json['organization'],
       banner: json['banner'],
       description: json['description'],
       startTime: json['startTime'],
@@ -39,6 +42,7 @@ class EventModel {
     return {
       'hostID': hostID,
       'title': title,
+      'organization': organizer,
       'banner': banner,
       'description': description,
       'startTime': startTime,

@@ -1,3 +1,5 @@
+import 'package:dashboard/helper/secure_storage.dart';
+import 'package:dashboard/helper/storage_constant.dart';
 import 'package:dashboard/models/aid_distribution_model.dart';
 import 'package:dashboard/models/event_models.dart';
 import 'package:dashboard/screens/add_edit_aids.dart';
@@ -6,6 +8,7 @@ import 'package:dashboard/screens/change_password_page.dart';
 import 'package:dashboard/screens/profile_page.dart';
 import 'package:dashboard/screens/profile_settings_page.dart';
 import 'package:dashboard/screens/splash_screen.dart';
+import 'package:dashboard/screens/update_profile.dart';
 import 'package:dashboard/screens/view_all_access_request_page.dart';
 import 'package:dashboard/screens/dashboard_screen.dart';
 import 'package:dashboard/screens/login_screen.dart';
@@ -31,6 +34,7 @@ class AppRoutes {
   static const String changePasswordPage = '/changePassword';
   static const String profilePage = '/profile';
   static const String profileSettingsPage = '/profileSettings';
+  static const String updateProfile = '/updateProfile';
   static const String eventsPage = '/eventsPage';
   static const String addEventPage = '/addEvent';
   static const String viewAllAids = '/viewAllAids';
@@ -40,6 +44,10 @@ class AppRoutes {
   static const String eventByIdPage = '/eventByIdPage/';
   static const String addAids = '/addAids';
   static const String editAids = '/editAids/';
+}
+
+Future<bool> isAuthenticated() async {
+  return await SecureStorage.read(StorageConstant.token) != null;
 }
 
 final GoRouter appRouter = GoRouter(
@@ -88,6 +96,11 @@ final GoRouter appRouter = GoRouter(
         path: AppRoutes.changePasswordPage,
         builder: (context, state) {
           return ChangePasswordPage();
+        }),
+    GoRoute(
+        path: AppRoutes.updateProfile,
+        builder: (context, state) {
+          return const ProfileUpdatePage();
         }),
     GoRoute(
         path: AppRoutes.viewAllAids,
@@ -149,6 +162,18 @@ final GoRouter appRouter = GoRouter(
       },
     ),
   ],
+  redirect: (context, state) async {
+    final isLoggedIn = await isAuthenticated();
+    final isLoggingInOrSignup = state.uri.toString() == AppRoutes.loginPage ||
+        state.uri.toString() == AppRoutes.signupPage;
+    if (!isLoggedIn && !isLoggingInOrSignup) {
+      return AppRoutes.loginPage;
+    }
+    if (isLoggedIn && isLoggingInOrSignup) {
+      return AppRoutes.dashboardPage;
+    }
+    return null;
+  },
   errorPageBuilder: (context, state) => MaterialPage(
     child: Scaffold(
       body: Center(

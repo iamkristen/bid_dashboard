@@ -232,8 +232,9 @@ class _UserAccessRequestPageState extends State<UserAccessRequestPage> {
                                       ElevatedButton.icon(
                                         onPressed: () async {
                                           try {
-                                            final res = await authProvider
-                                                .sendRejectionEmail(
+                                            final res =
+                                                await accessRequestProvider
+                                                    .sendRejectionEmail(
                                               email: accessRequestProvider
                                                   .request!.email,
                                               name: accessRequestProvider

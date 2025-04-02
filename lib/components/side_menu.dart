@@ -1,3 +1,4 @@
+import 'package:dashboard/components/custom_buttons.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:dashboard/helper/app_colors.dart';
@@ -46,12 +47,14 @@ class _SideMenuState extends State<SideMenu> {
     }
 
     return Drawer(
-      child: ListView(
-        padding: EdgeInsets.zero,
+      child: Column(
         children: [
-          DrawerHeader(
-            decoration: BoxDecoration(color: AppColors.primary),
-            child: Image.asset("logo.png"),
+          SizedBox(
+            width: double.infinity,
+            child: DrawerHeader(
+              decoration: BoxDecoration(color: AppColors.primary),
+              child: Image.asset("logo.png"),
+            ),
           ),
           _buildMenuItem(
             context,
@@ -93,6 +96,24 @@ class _SideMenuState extends State<SideMenu> {
             context,
             title: "View All Aids",
             onTap: () => context.go(AppRoutes.viewAllAids),
+          ),
+          // const SizedBox(height: 20),
+          const Spacer(),
+          Padding(
+            padding: const EdgeInsets.only(
+              right: 20,
+              left: 10,
+              bottom: 30,
+            ),
+            child: CustomButton(
+              width: 200,
+              icon: Icons.logout,
+              text: "Logout",
+              onPressed: () {
+                SecureStorage.clear();
+                context.go(AppRoutes.loginPage);
+              },
+            ),
           ),
         ],
       ),

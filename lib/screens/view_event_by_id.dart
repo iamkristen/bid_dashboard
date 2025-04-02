@@ -1,5 +1,6 @@
 import 'package:dashboard/helper/app_colors.dart';
 import 'package:dashboard/helper/app_fonts.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:dashboard/provider/event_provider.dart';
@@ -91,7 +92,7 @@ class _ViewEventByIdPageState extends State<ViewEventByIdPage> {
                                     Row(
                                       children: [
                                         const Icon(
-                                          Icons.access_time,
+                                          CupertinoIcons.time,
                                           color: AppColors.primary,
                                         ),
                                         const SizedBox(width: 8),
@@ -123,7 +124,7 @@ class _ViewEventByIdPageState extends State<ViewEventByIdPage> {
                                     const SizedBox(height: 10),
                                     Row(
                                       children: [
-                                        const Icon(Icons.location_on_outlined),
+                                        const Icon(CupertinoIcons.location),
                                         const SizedBox(width: 8),
                                         Text(
                                           event.location,
@@ -138,7 +139,23 @@ class _ViewEventByIdPageState extends State<ViewEventByIdPage> {
                                     const SizedBox(height: 10),
                                     Row(
                                       children: [
-                                        const Icon(Icons.check_circle_outline),
+                                        const Icon(Icons.verified_user),
+                                        const SizedBox(width: 8),
+                                        Text(
+                                          event.organizer,
+                                          style: AppTextStyles
+                                              .poppinsRegularStyle
+                                              .copyWith(
+                                                  fontSize: 14,
+                                                  color: AppColors.primary),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 10),
+                                    Row(
+                                      children: [
+                                        const Icon(CupertinoIcons
+                                            .check_mark_circled_solid),
                                         const SizedBox(width: 8),
                                         RichText(
                                           text: TextSpan(

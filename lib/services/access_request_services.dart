@@ -97,7 +97,6 @@ class AccessRequestService {
   Future<AccessRequestModel> updateRequest(
       String requestId, Map<String, dynamic> updatedData) async {
     try {
-      print(requestId);
       final response = await _dio.put(
         "/profile/update/$requestId",
         data: updatedData,

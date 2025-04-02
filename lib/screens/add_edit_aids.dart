@@ -6,6 +6,8 @@ import 'package:dashboard/components/custom_textfields.dart';
 import 'package:dashboard/helper/app_colors.dart';
 import 'package:dashboard/helper/app_fonts.dart';
 import 'package:dashboard/helper/remove_exception_string.dart';
+import 'package:dashboard/helper/secure_storage.dart';
+import 'package:dashboard/helper/storage_constant.dart';
 import 'package:dashboard/models/aid_distribution_model.dart';
 import 'package:dashboard/provider/aid_distribution_provider.dart';
 import 'package:dashboard/routes.dart';
@@ -28,10 +30,8 @@ class _AddOrEditAidPageState extends State<AddOrEditAidPage> {
 
   late TextEditingController _quantityController;
   late TextEditingController _unitController;
-  late TextEditingController _distributedByController;
   late TextEditingController _locationController;
   late TextEditingController _notesController;
-  late String _email;
   DateTime? _expireDate;
   String _selectedAidType = "Food";
 
@@ -50,8 +50,6 @@ class _AddOrEditAidPageState extends State<AddOrEditAidPage> {
     _quantityController =
         TextEditingController(text: widget.aid?.quantity.toString() ?? '');
     _unitController = TextEditingController(text: widget.aid?.unit ?? '');
-    _distributedByController =
-        TextEditingController(text: widget.aid?.distributedBy ?? '');
     _locationController =
         TextEditingController(text: widget.aid?.location ?? '');
     _notesController = TextEditingController(text: widget.aid?.notes ?? '');
@@ -74,6 +72,7 @@ class _AddOrEditAidPageState extends State<AddOrEditAidPage> {
   }
 
   void _submitForm() async {
+    final org = await SecureStorage.read(StorageConstant.orgName);
     if (!_formKey.currentState!.validate()) return;
 
     try {
@@ -82,7 +81,7 @@ class _AddOrEditAidPageState extends State<AddOrEditAidPage> {
         'aidType': _selectedAidType,
         'quantity': int.parse(_quantityController.text.trim()),
         'unit': _unitController.text.trim(),
-        'distributedBy': _distributedByController.text.trim(),
+        'distributedBy': org,
         'location': _locationController.text.trim(),
         'notes': _notesController.text.trim(),
         'expire': _expireDate?.toIso8601String(),
@@ -180,14 +179,6 @@ class _AddOrEditAidPageState extends State<AddOrEditAidPage> {
                         icon: Icons.straighten,
                       ),
                       const SizedBox(height: 12),
-                      CustomTextField(
-                        label: "Distributed By",
-                        hintText: "Enter distributor name",
-                        controller: _distributedByController,
-                        icon: Icons.group_outlined,
-                        validator: (value) =>
-                            value == null || value.isEmpty ? 'Required' : null,
-                      ),
                       const SizedBox(height: 12),
                       CustomTextField(
                         label: "Location",

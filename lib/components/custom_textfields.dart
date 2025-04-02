@@ -12,6 +12,7 @@ class CustomTextField extends StatelessWidget {
   final Function(String)? onChanged;
   final String label;
   final int maxLines;
+  final Widget? suffix;
 
   const CustomTextField({
     super.key,
@@ -23,6 +24,7 @@ class CustomTextField extends StatelessWidget {
     this.validator,
     this.onChanged,
     this.maxLines = 1,
+    this.suffix,
     required this.label,
   });
 
@@ -41,6 +43,7 @@ class CustomTextField extends StatelessWidget {
           color: AppColors.light,
         ),
         prefixIcon: Icon(icon, color: AppColors.primary),
+        suffix: suffix,
         hintText: hintText,
         hintStyle: const TextStyle(color: AppColors.light),
         contentPadding:

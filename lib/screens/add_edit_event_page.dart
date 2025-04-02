@@ -7,7 +7,6 @@ import 'package:dashboard/helper/app_colors.dart';
 import 'package:dashboard/helper/app_fonts.dart';
 import 'package:dashboard/helper/remove_exception_string.dart';
 import 'package:dashboard/models/event_models.dart';
-import 'package:dashboard/provider/access_request_provider.dart';
 import 'package:dashboard/provider/event_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -66,7 +65,7 @@ class _AddOrEditEventPageState extends State<AddOrEditEventPage> {
         } else {
           provider.endTime = fullDateTime;
         }
-        provider.notifyListeners();
+        provider.setLoading(false);
       }
     }
   }
@@ -221,7 +220,7 @@ class _AddOrEditEventPageState extends State<AddOrEditEventPage> {
                             value: provider.isActive,
                             onChanged: (val) {
                               provider.isActive = val;
-                              provider.notifyListeners();
+                              provider.setLoading(false);
                             },
                             activeColor: AppColors.primary,
                           ),

@@ -5,6 +5,7 @@ import 'package:dashboard/components/custom_textfields.dart';
 import 'package:dashboard/helper/app_colors.dart';
 import 'package:dashboard/helper/app_fonts.dart';
 import 'package:dashboard/helper/remove_exception_string.dart';
+import 'package:dashboard/provider/access_request_provider.dart';
 import 'package:dashboard/provider/auth_provider.dart';
 import 'package:dashboard/routes.dart';
 import 'package:flutter/gestures.dart';
@@ -18,9 +19,10 @@ class SignupPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    AuthProvider provider = Provider.of<AuthProvider>(context);
+    AccessRequestProvider provider =
+        Provider.of<AccessRequestProvider>(context);
     return ChangeNotifierProvider(
-      create: (_) => AuthProvider(),
+      create: (_) => AccessRequestProvider(),
       child: Scaffold(
         body: Stack(
           children: [
@@ -60,7 +62,7 @@ class SignupPage extends StatelessWidget {
                               borderRadius: BorderRadius.circular(16),
                             ),
                             child: SingleChildScrollView(
-                              child: Consumer<AuthProvider>(
+                              child: Consumer<AccessRequestProvider>(
                                 builder: (context, provider, child) {
                                   return Column(
                                     crossAxisAlignment:

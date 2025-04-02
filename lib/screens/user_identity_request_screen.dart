@@ -7,7 +7,9 @@ import 'package:dashboard/helper/app_colors.dart';
 import 'package:dashboard/helper/app_fonts.dart';
 import 'package:dashboard/helper/status_helper.dart';
 import 'package:dashboard/provider/identity_request_provider.dart';
+import 'package:dashboard/routes.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 
@@ -159,7 +161,8 @@ class _UserIdentityRequestPageState extends State<UserIdentityRequestPage> {
                                         CustomMessage.show(context,
                                             message: "Request Approved",
                                             backgroundColor: Colors.green);
-                                        Navigator.pop(context);
+                                        context.go(
+                                            AppRoutes.viewIdentityRequestPage);
                                       },
                                       icon: const Icon(Icons.check,
                                           color: Colors.white),
@@ -225,7 +228,8 @@ class _UserIdentityRequestPageState extends State<UserIdentityRequestPage> {
                                                       return;
                                                     }
 
-                                                    Navigator.pop(context);
+                                                    context.go(AppRoutes
+                                                        .viewIdentityRequestPage);
                                                   },
                                                   child: const Text(
                                                     "Send",
