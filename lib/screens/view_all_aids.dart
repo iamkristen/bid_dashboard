@@ -4,6 +4,7 @@ import 'package:dashboard/helper/app_colors.dart';
 import 'package:dashboard/models/aid_distribution_model.dart';
 import 'package:dashboard/provider/aid_distribution_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import 'package:dashboard/components/custom_appbar.dart';
 import 'package:dashboard/helper/app_fonts.dart';
@@ -53,13 +54,19 @@ class _ViewAllAidsPageState extends State<ViewAllAidsPage> {
               builder: (context, provider, _) {
                 if (provider.isLoading) {
                   return const Center(child: CircularProgressIndicator());
-                } else if (provider.error != null) {
-                  return Center(child: Text(provider.error!));
                 } else if (provider.aidList.isEmpty) {
-                  return const Center(
-                      child: Text(
-                    "No aid distributions found.",
-                    style: AppTextStyles.poppinsRegularStyle,
+                  return Center(
+                      child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Lottie.asset("lottie/no_found.json",
+                          width: MediaQuery.of(context).size.width * 0.35),
+                      Text(
+                        "No Aid Found",
+                        style:
+                            AppTextStyles.icebergStyle.copyWith(fontSize: 28),
+                      ),
+                    ],
                   ));
                 }
 

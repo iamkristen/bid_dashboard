@@ -114,7 +114,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                       1: FlexColumnWidth(),
                                     },
                                     children: [
-                                      _buildTableRow("Name",
+                                      _buildTableRow("Organization",
                                           accessRequestProvider.request!.name),
                                       _buildTableRow("Email",
                                           accessRequestProvider.request!.email),

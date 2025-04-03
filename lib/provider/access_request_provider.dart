@@ -24,6 +24,11 @@ class AccessRequestProvider with ChangeNotifier {
   late String mimeType;
   List<AccessRequestModel> _allRequests = [];
   AccessRequestModel? _request;
+  List<AccessRequestModel> _filteredRequests = [];
+  String _currentFilter = 'Pending';
+  String get currentFilter => _currentFilter;
+  List<AccessRequestModel> get filteredRequests => _filteredRequests;
+
   int _count = 0;
   int _availablePages = 0;
   int _currentPage = 1;
@@ -159,6 +164,7 @@ class AccessRequestProvider with ChangeNotifier {
         crnNumber: crnNumberController.text.trim(),
         email: emailController.text.trim(),
         reason: reasonController.text.trim(),
+        status: "Pending",
         supportingDocuments: urls,
       );
 
@@ -222,6 +228,31 @@ class AccessRequestProvider with ChangeNotifier {
     }
   }
 
+  void _applyFilter(String filter) {
+    _currentFilter = filter;
+    if (filter == "All") {
+      _filteredRequests = _allRequests;
+    } else if (filter == "Pending") {
+      _filteredRequests =
+          _allRequests.where((request) => request.status == "Pending").toList();
+    } else if (filter == "Approved") {
+      _filteredRequests = _allRequests
+          .where((request) => request.status == "Approved")
+          .toList();
+    } else if (filter == "Rejected") {
+      _filteredRequests = _allRequests
+          .where((request) => request.status == "Rejected")
+          .toList();
+    } else {
+      _filteredRequests = _allRequests;
+    }
+    notifyListeners();
+  }
+
+  void setFilterRequests(String filter) {
+    _applyFilter(filter);
+  }
+
   Future<String> fetchAllRequests({int page = 1}) async {
     try {
       setLoading(true);
@@ -229,10 +260,10 @@ class AccessRequestProvider with ChangeNotifier {
       _availablePages = res.totalPages;
       _currentPage = res.currentPage;
       _allRequests = res.data;
+      _filteredRequests = res.data;
       setLoading(false);
       return "Success";
     } catch (e) {
-      print(e);
       setLoading(false);
       return e.toString();
     }

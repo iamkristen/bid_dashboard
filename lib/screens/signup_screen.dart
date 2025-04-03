@@ -202,7 +202,7 @@ class SignupPage extends StatelessWidget {
                                               await provider.registerProfile();
 
                                               if (!context.mounted) return;
-                                              Navigator.pop(context);
+                                              context.go(AppRoutes.loginPage);
                                               CustomMessage.show(
                                                 context,
                                                 message:

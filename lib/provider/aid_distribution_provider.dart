@@ -1,3 +1,5 @@
+import 'package:dashboard/helper/secure_storage.dart';
+import 'package:dashboard/helper/storage_constant.dart';
 import 'package:dashboard/models/aid_distribution_model.dart';
 import 'package:dashboard/services/aids_distribution_services.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +9,8 @@ class AidDistributionProvider with ChangeNotifier {
 
   List<AidDistributionModel> _aidList = [];
   AidDistributionModel? _selectedAid;
+  int _aidCount = 0;
+  int get aidCount => _aidCount;
 
   bool _isLoading = false;
   String? _error;
@@ -26,7 +30,14 @@ class AidDistributionProvider with ChangeNotifier {
     _error = null;
 
     try {
-      _aidList = await _aidService.fetchAllAidDistributions();
+      final role = await SecureStorage.read(StorageConstant.role);
+      final email = await SecureStorage.read(StorageConstant.email);
+      if (role == 'admin') {
+        _aidList = await _aidService.fetchAllAidDistributions();
+      }
+      if (role == 'org' && email != null) {
+        _aidList = await _aidService.fetchAidByBeneficiary(email);
+      }
     } catch (e) {
       _error = e.toString();
     } finally {
@@ -53,6 +64,26 @@ class AidDistributionProvider with ChangeNotifier {
 
     try {
       _aidList = await _aidService.fetchAidByBeneficiary(beneficiaryId);
+    } catch (e) {
+      _error = e.toString();
+    } finally {
+      setLoading(false);
+    }
+  }
+
+// get all aid count
+  Future<void> getAllAidsCount() async {
+    setLoading(true);
+    _error = null;
+    try {
+      final role = await SecureStorage.read(StorageConstant.role);
+      final email = await SecureStorage.read(StorageConstant.email);
+      if (role == 'admin') {
+        _aidCount = await _aidService.getAllAidsCount();
+      }
+      if (role == 'org' && email != null) {
+        _aidCount = await _aidService.getAidsCountByBeneficiary(email);
+      }
     } catch (e) {
       _error = e.toString();
     } finally {

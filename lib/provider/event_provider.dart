@@ -16,6 +16,7 @@ class EventProvider with ChangeNotifier {
 
   bool _isLoading = false;
   String? _error;
+  int _eventCount = 0;
 
   late String fileName;
   late String mimeType;
@@ -37,6 +38,7 @@ class EventProvider with ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get error => _error;
   String get selectedFilter => _selectedFilter;
+  int get eventCount => _eventCount;
 
   List<EventModel> get filteredEvents {
     if (_selectedFilter == 'All') return _events;
@@ -160,6 +162,26 @@ class EventProvider with ChangeNotifier {
       }
       if (role == 'org' && email != null) {
         _events = await _eventService.fetchAllEventsForOrg(email);
+      }
+    } catch (e) {
+      _error = e.toString();
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  Future<void> getEventsCount() async {
+    setLoading(true);
+    _error = null;
+
+    try {
+      final role = await SecureStorage.read(StorageConstant.role);
+      final email = await SecureStorage.read(StorageConstant.email);
+      if (role == 'admin') {
+        _eventCount = await _eventService.fetchAllEventsCountForAdmin();
+      }
+      if (role == 'org' && email != null) {
+        _eventCount = await _eventService.fetchAllEventsCountForOrg(email);
       }
     } catch (e) {
       _error = e.toString();

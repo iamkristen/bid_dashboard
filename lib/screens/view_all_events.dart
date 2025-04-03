@@ -8,6 +8,7 @@ import 'package:dashboard/provider/event_provider.dart';
 import 'package:dashboard/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 
@@ -96,14 +97,19 @@ class _UserEventsPageState extends State<UserEventsPage> {
                 builder: (context, eventProvider, _) {
                   if (eventProvider.isLoading) {
                     return const Center(child: CircularProgressIndicator());
-                  } else if (eventProvider.error != null) {
-                    return Center(child: Text(eventProvider.error!));
                   } else if (eventProvider.filteredEvents.isEmpty) {
                     return Center(
-                        child: Text(
-                      "No events found",
-                      style: AppTextStyles.poppinsRegularStyle
-                          .copyWith(color: Colors.white, fontSize: 16),
+                        child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Lottie.asset("lottie/no_found.json",
+                            width: MediaQuery.of(context).size.width * 0.35),
+                        Text(
+                          "No Events Found",
+                          style:
+                              AppTextStyles.icebergStyle.copyWith(fontSize: 28),
+                        ),
+                      ],
                     ));
                   } else {
                     return ListView.builder(

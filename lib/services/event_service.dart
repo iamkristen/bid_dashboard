@@ -58,6 +58,36 @@ class EventService {
     }
   }
 
+  Future<int> fetchAllEventsCountForOrg(String hostId) async {
+    try {
+      final data = await _dio.get("/event/count/$hostId");
+      final res = ResponseHelper.fromJson(data.data);
+      if (!res.success) {
+        return 0;
+      }
+      return res.data;
+    } on DioException catch (e) {
+      throw Exception(_handleDioError(e));
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<int> fetchAllEventsCountForAdmin() async {
+    try {
+      final data = await _dio.get("/event/count/all");
+      final res = ResponseHelper.fromJson(data.data);
+      if (!res.success) {
+        return 0;
+      }
+      return res.data;
+    } on DioException catch (e) {
+      throw Exception(_handleDioError(e));
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   Future<EventModel> createEvent(Map<String, dynamic> eventData) async {
     try {
       final data = await _dio.post("/event/create", data: eventData);

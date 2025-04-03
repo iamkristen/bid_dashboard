@@ -6,13 +6,16 @@ class IdentityRequestProvider with ChangeNotifier {
   final IdentityRequestService _service = IdentityRequestService();
 
   List<UserData> _allRequests = [];
+  List<UserData> _filteredRequests = [];
+  String _currentFilter = 'Pending';
+
   UserData? _request;
   int _count = 0;
   int _currentPage = 1;
   int _totalPages = 0;
-
   bool _isLoading = false;
   String? _error;
+  List<UserData> get filteredRequests => _filteredRequests;
 
   List<UserData> get allRequests => _allRequests;
   UserData? get request => _request;
@@ -32,12 +35,38 @@ class IdentityRequestProvider with ChangeNotifier {
       _currentPage = res.currentPage;
       _totalPages = res.totalPages;
       _allRequests = res.data;
+      _filteredRequests = res.data;
     } catch (e) {
       _error = e.toString();
     } finally {
       _isLoading = false;
       notifyListeners();
     }
+  }
+
+  void _applyFilter(String filter) {
+    _currentFilter = filter;
+    if (filter == "All") {
+      _filteredRequests = _allRequests;
+    } else if (filter == "Pending") {
+      _filteredRequests =
+          _allRequests.where((request) => request.status == "Pending").toList();
+    } else if (filter == "Approved") {
+      _filteredRequests = _allRequests
+          .where((request) => request.status == "Approved")
+          .toList();
+    } else if (filter == "Rejected") {
+      _filteredRequests = _allRequests
+          .where((request) => request.status == "Rejected")
+          .toList();
+    } else {
+      _filteredRequests = _allRequests;
+    }
+    notifyListeners();
+  }
+
+  void setFilterRequests(String filter) {
+    _applyFilter(filter);
   }
 
   Future<void> fetchRequestById(String requestId) async {

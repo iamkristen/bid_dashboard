@@ -9,7 +9,9 @@ import 'package:dashboard/helper/remove_exception_string.dart';
 import 'package:dashboard/helper/status_helper.dart';
 import 'package:dashboard/provider/access_request_provider.dart';
 import 'package:dashboard/provider/auth_provider.dart';
+import 'package:dashboard/routes.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import 'dart:html' as html;
@@ -208,7 +210,9 @@ class _UserAccessRequestPageState extends State<UserAccessRequestPage> {
                                                       Colors.green);
                                             }
 
-                                            Navigator.pop(context);
+                                            context.go(
+                                              AppRoutes.viewAccessRequestPage,
+                                            );
                                           } catch (e) {
                                             if (!context.mounted) return;
 
@@ -257,8 +261,9 @@ class _UserAccessRequestPageState extends State<UserAccessRequestPage> {
                                                   message: "Request Rejected",
                                                   backgroundColor: Colors.red);
                                             }
-
-                                            Navigator.pop(context);
+                                            context.go(
+                                              AppRoutes.viewAccessRequestPage,
+                                            );
                                           } catch (e) {
                                             if (!context.mounted) return;
 

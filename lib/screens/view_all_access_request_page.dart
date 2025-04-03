@@ -36,26 +36,67 @@ class _ViewAccessRequestPageState extends State<ViewAccessRequestPage> {
     final screenWidth = MediaQuery.of(context).size.width;
     final cardWidth = 250.0; // Width of each card
     final crossAxisCount = (screenWidth / cardWidth).floor();
-    final requestProvider = Provider.of<AccessRequestProvider>(context);
 
-    return Scaffold(
-      appBar: const CustomAppBar(title: "View All Access Requests"),
-      drawer: const SideMenu(),
-      body: Stack(
-        children: [
-          Lottie.asset("lottie/background.json", width: 400, height: 400),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: requestProvider.isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : requestProvider.allRequests.isNotEmpty
-                    ? LayoutBuilder(
-                        builder: (context, constraints) {
-                          return SingleChildScrollView(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
+    return DefaultTabController(
+      length: 4,
+      child: Consumer<AccessRequestProvider>(
+        builder: (context, requestProvider, child) {
+          return Scaffold(
+            appBar: const CustomAppBar(title: "View All Access Requests"),
+            drawer: const SideMenu(),
+            body: Stack(
+              children: [
+                Lottie.asset("lottie/background.json", width: 400, height: 400),
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: requestProvider.isLoading
+                      ? const Center(child: CircularProgressIndicator())
+                      : Column(
+                          children: [
+                            Row(
                               children: [
+                                Expanded(
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(bottom: 12),
+                                    child: TabBar(
+                                      isScrollable: true,
+                                      indicatorColor: Colors.white,
+                                      indicatorSize: TabBarIndicatorSize.label,
+                                      labelColor: Colors.white,
+                                      unselectedLabelColor: AppColors.light,
+                                      labelStyle: AppTextStyles
+                                          .poppinsRegularStyle
+                                          .copyWith(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                      dividerColor: Colors.transparent,
+                                      onTap: (index) {
+                                        final provider =
+                                            Provider.of<AccessRequestProvider>(
+                                                context,
+                                                listen: false);
+                                        if (index == 0) {
+                                          provider.setFilterRequests("All");
+                                        } else if (index == 1) {
+                                          provider.setFilterRequests("Pending");
+                                        } else if (index == 2) {
+                                          provider
+                                              .setFilterRequests("Rejected");
+                                        } else if (index == 3) {
+                                          provider
+                                              .setFilterRequests("Approved");
+                                        }
+                                      },
+                                      tabs: const [
+                                        Tab(text: "All"),
+                                        Tab(text: "Pending"),
+                                        Tab(text: "Rejected"),
+                                        Tab(text: "Approved"),
+                                      ],
+                                    ),
+                                  ),
+                                ),
                                 Container(
                                   alignment: Alignment.centerRight,
                                   child: Row(
@@ -127,148 +168,122 @@ class _ViewAccessRequestPageState extends State<ViewAccessRequestPage> {
                                     ],
                                   ),
                                 ),
-                                Wrap(
-                                  alignment: WrapAlignment.center,
-                                  spacing: 15,
-                                  runSpacing: 15,
-                                  children: requestProvider.allRequests
-                                      .map((request) {
-                                    return SizedBox(
-                                      height: 220,
-                                      width:
-                                          constraints.maxWidth / crossAxisCount,
-                                      child: GestureDetector(
-                                        onTap: () => context.go(
-                                          "${AppRoutes.userAccessRequestPage}${request.id}",
-                                        ),
-                                        child: Card(
-                                          elevation: 6,
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(12),
-                                          ),
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.center,
-                                              children: [
-                                                ClipRRect(
-                                                  borderRadius:
-                                                      BorderRadius.circular(10),
-                                                  child: CachedNetworkImage(
-                                                    imageUrl: request.logo,
-                                                    height: 130,
-                                                    width: double.infinity,
-                                                    fit: BoxFit.cover,
-                                                    placeholder:
-                                                        (context, url) =>
-                                                            const Center(
-                                                      child:
-                                                          CircularProgressIndicator(),
-                                                    ),
-                                                    errorWidget:
-                                                        (context, url, error) =>
-                                                            Container(
-                                                      height: 130,
-                                                      color:
-                                                          Colors.grey.shade300,
-                                                      child: const Icon(
-                                                          Icons.account_circle,
-                                                          size: 120,
-                                                          color: AppColors
-                                                              .primary),
-                                                    ),
-                                                  ),
-                                                ),
-                                                const SizedBox(height: 10),
-                                                Text(
-                                                  request.name,
-                                                  style: AppTextStyles
-                                                      .icebergStyle
-                                                      .copyWith(
-                                                          fontSize: 18,
-                                                          color: AppColors
-                                                              .primary),
-                                                ),
-                                                Text(
-                                                  request.crnNumber.toString(),
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                  textAlign: TextAlign.center,
-                                                  style: AppTextStyles
-                                                      .poppinsRegularStyle
-                                                      .copyWith(
-                                                          fontSize: 16,
-                                                          color: AppColors
-                                                              .primary),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    );
-                                  }).toList(),
-                                ),
                               ],
                             ),
-                          );
-                        },
-                      )
-
-                    // ? ListView.builder(
-                    //     itemCount: requestProvider.allRequests.length,
-                    //     itemBuilder: (context, index) {
-                    //       final request = requestProvider.allRequests[index];
-                    //       return Container(
-                    //         margin: const EdgeInsets.symmetric(
-                    //             vertical: 2, horizontal: 5),
-                    //         decoration: BoxDecoration(
-                    //           border: Border.all(color: Colors.grey),
-                    //           borderRadius: BorderRadius.circular(5),
-                    //         ),
-                    //         child: ListTile(
-                    //           tileColor: AppColors.primary,
-                    //           leading: CircleAvatar(
-                    //             radius: 50,
-                    //             backgroundColor: AppColors.primary,
-                    //             child: CachedNetworkImage(
-                    //               imageUrl: request.logo,
-                    //               imageBuilder: (context, imageProvider) =>
-                    //                   CircleAvatar(
-                    //                 radius: 50,
-                    //                 backgroundImage: imageProvider,
-                    //               ),
-                    //               placeholder: (context, url) =>
-                    //                   CircularProgressIndicator(),
-                    //               errorWidget: (context, url, error) => Icon(
-                    //                 Icons.account_circle,
-                    //                 size: 50,
-                    //                 color: Colors.white,
-                    //               ),
-                    //             ),
-                    //           ),
-                    //           title: Text(request.name,
-                    //               style: AppTextStyles.poppinsRegularStyle),
-                    //           subtitle: Text(
-                    //             "CRN Number: ${request.crnNumber}",
-                    //             style: AppTextStyles.poppinsRegularStyle.copyWith(
-                    //               fontSize: 12,
-                    //               color: Colors.white70,
-                    //             ),
-                    //           ),
-                    //           onTap: () => context.go(
-                    //             "${AppRoutes.userAccessRequestPage}${request.id}",
-                    //           ),
-                    //         ),
-                    //       );
-                    //     },
-                    //   )
-                    : NotFoundWidget(
-                        text: "No Access Request Found", fontsize: 28),
-          ),
-        ],
+                            // Filtered List View
+                            Expanded(
+                              child: requestProvider.filteredRequests.isNotEmpty
+                                  ? Wrap(
+                                      alignment: WrapAlignment.center,
+                                      spacing: 15,
+                                      runSpacing: 15,
+                                      children: requestProvider.filteredRequests
+                                          .map((request) {
+                                        return SizedBox(
+                                          height: 220,
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width /
+                                              crossAxisCount,
+                                          child: GestureDetector(
+                                            onTap: () => context.go(
+                                              "${AppRoutes.userAccessRequestPage}${request.id}",
+                                            ),
+                                            child: Card(
+                                              elevation: 6,
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(12),
+                                              ),
+                                              child: Padding(
+                                                padding:
+                                                    const EdgeInsets.all(8.0),
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.center,
+                                                  children: [
+                                                    ClipRRect(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              10),
+                                                      child: CachedNetworkImage(
+                                                        imageUrl: request.logo,
+                                                        height: 130,
+                                                        width: double.infinity,
+                                                        fit: BoxFit.cover,
+                                                        placeholder:
+                                                            (context, url) =>
+                                                                const Center(
+                                                          child:
+                                                              CircularProgressIndicator(),
+                                                        ),
+                                                        errorWidget: (context,
+                                                                url, error) =>
+                                                            Container(
+                                                          height: 130,
+                                                          color: Colors
+                                                              .grey.shade300,
+                                                          child: const Icon(
+                                                              Icons
+                                                                  .account_circle,
+                                                              size: 120,
+                                                              color: AppColors
+                                                                  .primary),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    const SizedBox(height: 10),
+                                                    Text(
+                                                      request.name,
+                                                      style: AppTextStyles
+                                                          .icebergStyle
+                                                          .copyWith(
+                                                        fontSize: 18,
+                                                        color:
+                                                            AppColors.primary,
+                                                      ),
+                                                    ),
+                                                    Text(
+                                                      request.crnNumber
+                                                          .toString(),
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                      textAlign:
+                                                          TextAlign.center,
+                                                      style: AppTextStyles
+                                                          .poppinsRegularStyle
+                                                          .copyWith(
+                                                        fontSize: 16,
+                                                        color:
+                                                            AppColors.primary,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        );
+                                      }).toList(),
+                                    )
+                                  : Center(
+                                      child: Text(
+                                        "No Access Requests Found",
+                                        style:
+                                            AppTextStyles.icebergStyle.copyWith(
+                                          fontSize: 20,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ),
+                            ),
+                          ],
+                        ),
+                ),
+              ],
+            ),
+          );
+        },
       ),
     );
   }

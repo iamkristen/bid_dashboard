@@ -33,6 +33,8 @@ class AccessRequestModel {
   final String crnNumber;
   final String email;
   final String reason;
+  final String status;
+  final String createdAt;
   final List<String> supportingDocuments;
 
   AccessRequestModel({
@@ -42,6 +44,8 @@ class AccessRequestModel {
     required this.crnNumber,
     required this.email,
     required this.reason,
+    required this.status,
+    this.createdAt = "",
     required this.supportingDocuments,
   });
 
@@ -53,6 +57,7 @@ class AccessRequestModel {
       crnNumber: json['crnNumber'],
       email: json['email'],
       reason: json['reason'],
+      status: json['status'] ?? "Pending",
       supportingDocuments: (json['supportingDocuments'] as List).cast<String>(),
     );
   }
@@ -65,6 +70,7 @@ class AccessRequestModel {
       'crnNumber': crnNumber,
       'email': email,
       'reason': reason,
+      'status': status,
       'supportingDocuments': supportingDocuments,
     };
     return data;

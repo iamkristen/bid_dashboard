@@ -72,7 +72,7 @@ class AuthProvider extends ChangeNotifier {
         setLoading(false);
         throw Exception("Please fill all the fields.");
       }
-      await authService.signup({"email": email.toLowerCase()});
+      await authService.signup({"email": email.toLowerCase(), "role": "org"});
       setLoading(false);
       return true;
     } catch (e) {

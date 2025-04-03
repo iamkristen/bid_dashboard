@@ -2,7 +2,6 @@ import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dashboard/components/custom_appbar.dart';
-import 'package:dashboard/components/not_found_widget.dart';
 import 'package:dashboard/components/side_menu.dart';
 import 'package:dashboard/helper/app_colors.dart';
 import 'package:dashboard/helper/app_fonts.dart';
@@ -23,100 +22,142 @@ class ViewIdentityRequestPage extends StatelessWidget {
     final cardWidth = 250.0;
     final crossAxisCount = (screenWidth / cardWidth).floor();
 
-    return Scaffold(
-      appBar: const CustomAppBar(title: "View All Identity Requests"),
-      drawer: const SideMenu(),
-      body: Stack(
-        children: [
-          Lottie.asset("lottie/background.json", width: 400, height: 400),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: requestProvider.isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : requestProvider.allRequests.isNotEmpty
-                    ? LayoutBuilder(
-                        builder: (context, constraints) {
-                          return SingleChildScrollView(
-                            child: Column(
-                              children: [
-                                Container(
-                                  alignment: Alignment.centerRight,
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: [
-                                      Text(
-                                        "Pages",
-                                        style:
-                                            AppTextStyles.icebergStyle.copyWith(
-                                          fontSize: 22,
-                                        ),
-                                      ),
-                                      const SizedBox(width: 10),
-                                      for (int i in _getPaginationList(
-                                          requestProvider.currentPage,
-                                          requestProvider.availablePages))
-                                        GestureDetector(
-                                          onTap: () async {
-                                            if (i != -1) {
-                                              await requestProvider
-                                                  .fetchAllRequests(page: i);
-                                            }
-                                          },
+    return DefaultTabController(
+      length: 4,
+      child: Scaffold(
+        appBar: const CustomAppBar(title: "View All Identity Requests"),
+        drawer: const SideMenu(),
+        body: Stack(
+          children: [
+            Lottie.asset("lottie/background.json", width: 400, height: 400),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: requestProvider.isLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : Column(
+                      children: [
+                        // TabBar for filtering
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.only(bottom: 12),
+                                child: TabBar(
+                                  isScrollable: true,
+                                  indicatorColor: Colors.white,
+                                  indicatorSize: TabBarIndicatorSize.label,
+                                  labelColor: Colors.white,
+                                  unselectedLabelColor: AppColors.light,
+                                  labelStyle: AppTextStyles.poppinsRegularStyle
+                                      .copyWith(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  dividerColor: Colors.transparent,
+                                  onTap: (index) {
+                                    final provider =
+                                        Provider.of<IdentityRequestProvider>(
+                                            context,
+                                            listen: false);
+                                    if (index == 0) {
+                                      provider.setFilterRequests("All");
+                                    } else if (index == 1) {
+                                      provider.setFilterRequests("Pending");
+                                    } else if (index == 2) {
+                                      provider.setFilterRequests("Rejected");
+                                    } else if (index == 3) {
+                                      provider.setFilterRequests("Approved");
+                                    }
+                                  },
+                                  tabs: const [
+                                    Tab(text: "All"),
+                                    Tab(text: "Pending"),
+                                    Tab(text: "Rejected"),
+                                    Tab(text: "Approved"),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            // Pagination controls
+                            Container(
+                              alignment: Alignment.centerRight,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  Text(
+                                    "Pages",
+                                    style: AppTextStyles.icebergStyle.copyWith(
+                                      fontSize: 22,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 10),
+                                  for (int i in _getPaginationList(
+                                      requestProvider.currentPage,
+                                      requestProvider.availablePages))
+                                    GestureDetector(
+                                      onTap: () async {
+                                        if (i != -1) {
+                                          await requestProvider
+                                              .fetchAllRequests(page: i);
+                                        }
+                                      },
+                                      child: Transform.rotate(
+                                        angle: 0.7854, // 45 degrees in radians
+                                        child: Container(
+                                          margin: const EdgeInsets.symmetric(
+                                              horizontal: 8),
+                                          padding: const EdgeInsets.all(8),
+                                          decoration: BoxDecoration(
+                                            color: i ==
+                                                    requestProvider.currentPage
+                                                ? AppColors
+                                                    .primary // Highlight Active Page
+                                                : Colors.white,
+                                            borderRadius:
+                                                BorderRadius.circular(5),
+                                            border: Border.all(
+                                                color: AppColors.primary),
+                                          ),
                                           child: Transform.rotate(
                                             angle:
-                                                0.7854, // 45 degrees in radians
-                                            child: Container(
-                                              margin:
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 8),
-                                              padding: const EdgeInsets.all(8),
-                                              decoration: BoxDecoration(
+                                                -0.7854, // Rotate text back to normal
+                                            child: Text(
+                                              i == -1
+                                                  ? "..."
+                                                  : i.toString(), // Show '...' for skipped pages
+                                              style: AppTextStyles.icebergStyle
+                                                  .copyWith(
+                                                fontSize: 18,
                                                 color: i ==
                                                         requestProvider
                                                             .currentPage
-                                                    ? AppColors
-                                                        .primary // Highlight Active Page
-                                                    : Colors.white,
-                                                borderRadius:
-                                                    BorderRadius.circular(5),
-                                                border: Border.all(
-                                                    color: AppColors.primary),
-                                              ),
-                                              child: Transform.rotate(
-                                                angle: -0.7854,
-                                                child: Text(
-                                                  i == -1
-                                                      ? "..."
-                                                      : i.toString(),
-                                                  style: AppTextStyles
-                                                      .icebergStyle
-                                                      .copyWith(
-                                                    fontSize: 18,
-                                                    color: i ==
-                                                            requestProvider
-                                                                .currentPage
-                                                        ? Colors.white
-                                                        : AppColors.primary,
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                                ),
+                                                    ? Colors.white
+                                                    : AppColors.primary,
+                                                fontWeight: FontWeight.bold,
                                               ),
                                             ),
                                           ),
                                         ),
-                                    ],
-                                  ),
-                                ),
-                                Wrap(
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        // Filtered List View
+                        Expanded(
+                          child: requestProvider.filteredRequests.isNotEmpty
+                              ? Wrap(
                                   alignment: WrapAlignment.center,
                                   spacing: 15,
                                   runSpacing: 15,
-                                  children: requestProvider.allRequests
+                                  children: requestProvider.filteredRequests
                                       .map((request) {
                                     return SizedBox(
                                       height: 220,
-                                      width:
-                                          constraints.maxWidth / crossAxisCount,
+                                      width: MediaQuery.of(context).size.width /
+                                          crossAxisCount,
                                       child: GestureDetector(
                                         onTap: () => context.go(
                                           "${AppRoutes.userIdentityRequestPage}${request.id}",
@@ -196,21 +237,26 @@ class ViewIdentityRequestPage extends StatelessWidget {
                                       ),
                                     );
                                   }).toList(),
+                                )
+                              : Center(
+                                  child: Text(
+                                    "No Identity Requests Found",
+                                    style: AppTextStyles.icebergStyle.copyWith(
+                                      fontSize: 20,
+                                      color: Colors.white,
+                                    ),
+                                  ),
                                 ),
-                              ],
-                            ),
-                          );
-                        },
-                      )
-                    : const NotFoundWidget(
-                        text: "No Identity Requests Found", fontsize: 28),
-          ),
-        ],
+                        ),
+                      ],
+                    ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  /// Generate Smart Pagination Numbers
   List<int> _getPaginationList(int currentPage, int totalPages) {
     List<int> pages = [];
 

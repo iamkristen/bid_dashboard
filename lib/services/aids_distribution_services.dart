@@ -62,6 +62,38 @@ class AidDistributionService {
     }
   }
 
+  // get all aids count
+  Future<int> getAllAidsCount() async {
+    try {
+      final data = await _dio.get("/aids/count/all");
+      final res = ResponseHelper.fromJson(data.data);
+      if (!res.success) {
+        throw Exception(res.message);
+      }
+      return res.data;
+    } on DioException catch (e) {
+      throw Exception(_handleDioError(e));
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // get all aids count by beneficiary
+  Future<int> getAidsCountByBeneficiary(String beneficiaryId) async {
+    try {
+      final data = await _dio.get("/aids/count/$beneficiaryId");
+      final res = ResponseHelper.fromJson(data.data);
+      if (!res.success) {
+        throw Exception(res.message);
+      }
+      return res.data;
+    } on DioException catch (e) {
+      throw Exception(_handleDioError(e));
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   // Create new aid distribution record
   Future<AidDistributionModel> createAidDistribution(
       Map<String, dynamic> aidData) async {
