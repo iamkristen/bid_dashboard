@@ -148,95 +148,101 @@ class ViewIdentityRequestPage extends StatelessWidget {
                         // Filtered List View
                         Expanded(
                           child: requestProvider.filteredRequests.isNotEmpty
-                              ? Wrap(
-                                  alignment: WrapAlignment.center,
-                                  spacing: 15,
-                                  runSpacing: 15,
-                                  children: requestProvider.filteredRequests
-                                      .map((request) {
-                                    return SizedBox(
-                                      height: 220,
-                                      width: MediaQuery.of(context).size.width /
-                                          crossAxisCount,
-                                      child: GestureDetector(
-                                        onTap: () => context.go(
-                                          "${AppRoutes.userIdentityRequestPage}${request.id}",
-                                        ),
-                                        child: Card(
-                                          elevation: 6,
-                                          color: request.status == "Pending"
-                                              ? Colors.yellow
-                                              : request.status == "Approved"
-                                                  ? Colors.green
-                                                  : Colors.red,
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(12),
+                              ? SingleChildScrollView(
+                                  child: Wrap(
+                                    alignment: WrapAlignment.center,
+                                    spacing: 15,
+                                    runSpacing: 15,
+                                    children: requestProvider.filteredRequests
+                                        .map((request) {
+                                      return SizedBox(
+                                        height: 220,
+                                        width:
+                                            MediaQuery.of(context).size.width /
+                                                crossAxisCount,
+                                        child: GestureDetector(
+                                          onTap: () => context.go(
+                                            "${AppRoutes.userIdentityRequestPage}${request.id}",
                                           ),
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.center,
-                                              children: [
-                                                ClipRRect(
-                                                  borderRadius:
-                                                      BorderRadius.circular(10),
-                                                  child: CachedNetworkImage(
-                                                    imageUrl:
-                                                        request.profileImage,
-                                                    height: 130,
-                                                    width: double.infinity,
-                                                    fit: BoxFit.cover,
-                                                    placeholder:
-                                                        (context, url) =>
-                                                            const Center(
-                                                      child:
-                                                          CircularProgressIndicator(),
-                                                    ),
-                                                    errorWidget:
-                                                        (context, url, error) =>
-                                                            Container(
+                                          child: Card(
+                                            elevation: 6,
+                                            color: request.status == "Pending"
+                                                ? Colors.yellow
+                                                : request.status == "Approved"
+                                                    ? Colors.green
+                                                    : Colors.red,
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
+                                            ),
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.all(8.0),
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.center,
+                                                children: [
+                                                  ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            10),
+                                                    child: CachedNetworkImage(
+                                                      imageUrl:
+                                                          request.profileImage,
                                                       height: 130,
-                                                      color:
-                                                          Colors.grey.shade300,
-                                                      child: const Icon(
-                                                          Icons.account_circle,
-                                                          size: 120,
-                                                          color: AppColors
-                                                              .primary),
+                                                      width: double.infinity,
+                                                      fit: BoxFit.cover,
+                                                      placeholder:
+                                                          (context, url) =>
+                                                              const Center(
+                                                        child:
+                                                            CircularProgressIndicator(),
+                                                      ),
+                                                      errorWidget: (context,
+                                                              url, error) =>
+                                                          Container(
+                                                        height: 130,
+                                                        color: Colors
+                                                            .grey.shade300,
+                                                        child: const Icon(
+                                                            Icons
+                                                                .account_circle,
+                                                            size: 120,
+                                                            color: AppColors
+                                                                .primary),
+                                                      ),
                                                     ),
                                                   ),
-                                                ),
-                                                const SizedBox(height: 10),
-                                                Text(
-                                                  request.fullName,
-                                                  style: AppTextStyles
-                                                      .icebergStyle
-                                                      .copyWith(
-                                                          fontSize: 18,
-                                                          color: AppColors
-                                                              .primary),
-                                                ),
-                                                Text(
-                                                  "Action: ${request.action} | Status: ${request.status}",
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                  textAlign: TextAlign.center,
-                                                  style: AppTextStyles
-                                                      .poppinsRegularStyle
-                                                      .copyWith(
-                                                          fontSize: 14,
-                                                          color: AppColors
-                                                              .primary),
-                                                ),
-                                              ],
+                                                  const SizedBox(height: 10),
+                                                  Text(
+                                                    request.fullName,
+                                                    style: AppTextStyles
+                                                        .icebergStyle
+                                                        .copyWith(
+                                                            fontSize: 18,
+                                                            color: AppColors
+                                                                .primary),
+                                                  ),
+                                                  Text(
+                                                    "Action: ${request.action} | Status: ${request.status}",
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    textAlign: TextAlign.center,
+                                                    style: AppTextStyles
+                                                        .poppinsRegularStyle
+                                                        .copyWith(
+                                                            fontSize: 14,
+                                                            color: AppColors
+                                                                .primary),
+                                                  ),
+                                                ],
+                                              ),
                                             ),
                                           ),
                                         ),
-                                      ),
-                                    );
-                                  }).toList(),
+                                      );
+                                    }).toList(),
+                                  ),
                                 )
                               : Center(
                                   child: Text(

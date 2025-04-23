@@ -2,7 +2,6 @@ import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dashboard/components/custom_appbar.dart';
-import 'package:dashboard/components/not_found_widget.dart';
 import 'package:dashboard/components/side_menu.dart';
 import 'package:dashboard/helper/app_colors.dart';
 import 'package:dashboard/helper/app_fonts.dart';
@@ -173,98 +172,113 @@ class _ViewAccessRequestPageState extends State<ViewAccessRequestPage> {
                             // Filtered List View
                             Expanded(
                               child: requestProvider.filteredRequests.isNotEmpty
-                                  ? Wrap(
-                                      alignment: WrapAlignment.center,
-                                      spacing: 15,
-                                      runSpacing: 15,
-                                      children: requestProvider.filteredRequests
-                                          .map((request) {
-                                        return SizedBox(
-                                          height: 220,
-                                          width: MediaQuery.of(context)
-                                                  .size
-                                                  .width /
-                                              crossAxisCount,
-                                          child: GestureDetector(
-                                            onTap: () => context.go(
-                                              "${AppRoutes.userAccessRequestPage}${request.id}",
-                                            ),
-                                            child: Card(
-                                              elevation: 6,
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(12),
+                                  ? SingleChildScrollView(
+                                      child: Wrap(
+                                        alignment: WrapAlignment.center,
+                                        spacing: 15,
+                                        runSpacing: 15,
+                                        children: requestProvider
+                                            .filteredRequests
+                                            .map((request) {
+                                          return SizedBox(
+                                            height: 220,
+                                            width: MediaQuery.of(context)
+                                                    .size
+                                                    .width /
+                                                crossAxisCount,
+                                            child: GestureDetector(
+                                              onTap: () => context.go(
+                                                "${AppRoutes.userAccessRequestPage}${request.id}",
                                               ),
-                                              child: Padding(
-                                                padding:
-                                                    const EdgeInsets.all(8.0),
-                                                child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.center,
-                                                  children: [
-                                                    ClipRRect(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              10),
-                                                      child: CachedNetworkImage(
-                                                        imageUrl: request.logo,
-                                                        height: 130,
-                                                        width: double.infinity,
-                                                        fit: BoxFit.cover,
-                                                        placeholder:
-                                                            (context, url) =>
-                                                                const Center(
-                                                          child:
-                                                              CircularProgressIndicator(),
-                                                        ),
-                                                        errorWidget: (context,
-                                                                url, error) =>
-                                                            Container(
+                                              child: Card(
+                                                color:
+                                                    request.status == "Pending"
+                                                        ? Colors.yellow
+                                                        : request.status ==
+                                                                "Approved"
+                                                            ? Colors.green
+                                                            : Colors.red,
+                                                elevation: 6,
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(12),
+                                                ),
+                                                child: Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(8.0),
+                                                  child: Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .center,
+                                                    children: [
+                                                      ClipRRect(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(10),
+                                                        child:
+                                                            CachedNetworkImage(
+                                                          imageUrl:
+                                                              request.logo,
                                                           height: 130,
-                                                          color: Colors
-                                                              .grey.shade300,
-                                                          child: const Icon(
-                                                              Icons
-                                                                  .account_circle,
-                                                              size: 120,
-                                                              color: AppColors
-                                                                  .primary),
+                                                          width:
+                                                              double.infinity,
+                                                          fit: BoxFit.cover,
+                                                          placeholder:
+                                                              (context, url) =>
+                                                                  const Center(
+                                                            child:
+                                                                CircularProgressIndicator(),
+                                                          ),
+                                                          errorWidget: (context,
+                                                                  url, error) =>
+                                                              Container(
+                                                            height: 130,
+                                                            color: Colors
+                                                                .grey.shade300,
+                                                            child: const Icon(
+                                                                Icons
+                                                                    .account_circle,
+                                                                size: 120,
+                                                                color: AppColors
+                                                                    .primary),
+                                                          ),
                                                         ),
                                                       ),
-                                                    ),
-                                                    const SizedBox(height: 10),
-                                                    Text(
-                                                      request.name,
-                                                      style: AppTextStyles
-                                                          .icebergStyle
-                                                          .copyWith(
-                                                        fontSize: 18,
-                                                        color:
-                                                            AppColors.primary,
+                                                      const SizedBox(
+                                                          height: 10),
+                                                      Text(
+                                                        request.name,
+                                                        style: AppTextStyles
+                                                            .icebergStyle
+                                                            .copyWith(
+                                                          fontSize: 18,
+                                                          color:
+                                                              AppColors.primary,
+                                                        ),
                                                       ),
-                                                    ),
-                                                    Text(
-                                                      request.crnNumber
-                                                          .toString(),
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
-                                                      textAlign:
-                                                          TextAlign.center,
-                                                      style: AppTextStyles
-                                                          .poppinsRegularStyle
-                                                          .copyWith(
-                                                        fontSize: 16,
-                                                        color:
-                                                            AppColors.primary,
+                                                      Text(
+                                                        request.crnNumber
+                                                            .toString(),
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                        textAlign:
+                                                            TextAlign.center,
+                                                        style: AppTextStyles
+                                                            .poppinsRegularStyle
+                                                            .copyWith(
+                                                          fontSize: 16,
+                                                          color:
+                                                              AppColors.primary,
+                                                        ),
                                                       ),
-                                                    ),
-                                                  ],
+                                                    ],
+                                                  ),
                                                 ),
                                               ),
                                             ),
-                                          ),
-                                        );
-                                      }).toList(),
+                                          );
+                                        }).toList(),
+                                      ),
                                     )
                                   : Center(
                                       child: Text(

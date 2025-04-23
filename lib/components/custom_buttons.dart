@@ -9,6 +9,7 @@ class CustomButton extends StatelessWidget {
   final VoidCallback onPressed;
   final Color? backgroundColor;
   final Color? textColor;
+  final Color? iconColor;
   final double? borderRadius;
   final double? elevation;
   final EdgeInsetsGeometry? padding;
@@ -25,6 +26,7 @@ class CustomButton extends StatelessWidget {
     this.icon,
     this.backgroundColor,
     this.textColor,
+    this.iconColor,
     this.borderRadius,
     this.elevation,
     this.padding,
@@ -73,7 +75,11 @@ class CustomButton extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(icon, size: 20),
+                  Icon(
+                    icon,
+                    size: 20,
+                    color: iconColor != null ? iconColor : Colors.white,
+                  ),
                   const SizedBox(width: 8),
                   Text(
                     text,

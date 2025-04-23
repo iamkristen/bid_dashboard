@@ -6,7 +6,6 @@ import 'package:dashboard/helper/app_colors.dart';
 import 'package:dashboard/helper/app_fonts.dart';
 import 'package:dashboard/helper/remove_exception_string.dart';
 import 'package:dashboard/provider/access_request_provider.dart';
-import 'package:dashboard/provider/auth_provider.dart';
 import 'package:dashboard/routes.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';

@@ -6,7 +6,7 @@ class DioClient {
   DioClient() {
     // Base options for all requests
     _dio.options = BaseOptions(
-      baseUrl: "http://localhost:3000/api",
+      baseUrl: "https://bid-z9end.ondigitalocean.app/api",
       connectTimeout: const Duration(seconds: 10),
       receiveTimeout: const Duration(seconds: 10),
       headers: {

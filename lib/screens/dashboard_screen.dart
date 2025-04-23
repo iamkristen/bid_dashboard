@@ -1,4 +1,3 @@
-import 'package:dashboard/components/app_loader.dart';
 import 'package:dashboard/components/custom_appbar.dart';
 import 'package:dashboard/components/side_menu.dart';
 import 'package:dashboard/helper/app_colors.dart';
